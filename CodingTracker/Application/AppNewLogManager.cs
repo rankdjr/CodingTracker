@@ -75,8 +75,8 @@ public class AppNewLogManager
     {
         AnsiConsole.Clear();
 
-        DateTime startTime = _appUtil.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
-        DateTime endTime = _appUtil.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
+        DateTime startTime = _appUtil.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatLong}:", DatePrompt.Short);
+        DateTime endTime = _appUtil.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatLong}:", DatePrompt.Short);
 
         CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
 
