@@ -27,25 +27,26 @@ public class SessionService
     /// </summary>
     /// <param name="session">The coding session to insert.</param>
     /// <returns>True if the session was successfully added; otherwise, false.</returns>
-    public bool InsertNewSession(CodingSessionModel session)
+    public int InsertNewSession(CodingSessionModel session)
     {
         try
         {
             using (var connection = dbContext.GetNewDatabaseConnection())
             {
                 string sql = @"
-                INSERT INTO tb_CodingSessions (Id, DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
-                VALUES (@SessionId, @DateCreated, @DateUpdated, @SessionDate, @Duration, @StartTime, @EndTime)";
+                    INSERT INTO tb_CodingSessions (DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
+                    VALUES (@DateCreated, @DateUpdated, @SessionDate, @Duration, @StartTime, @EndTime);
+                    SELECT last_insert_rowid();";
 
-                int result = connection.Execute(sql, session);
-                return result > 0;
+                var id = connection.ExecuteScalar<int>(sql, session);
+                return id;  // Returns the auto-incremented Id
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error inserting new session.");
             Console.WriteLine($"{ex.Message}");
-            return false;
+            return -1;  // Indicate failure
         }
     }
 

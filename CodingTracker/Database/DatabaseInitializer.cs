@@ -11,7 +11,7 @@ public class DatabaseInitializer
 
     private static readonly string CreateSessionTable = @"
         CREATE TABLE IF NOT EXISTS tb_CodingSessions (
-            Id INTEGER PRIMARY KEY,
+            Id INTEGER PRIMARY KEY AUTOINCREMENT ,
             DateCreated TEXT NOT NULL,
             DateUpdated TEXT NOT NULL,
             SessionDate TEXT NOT NULL,

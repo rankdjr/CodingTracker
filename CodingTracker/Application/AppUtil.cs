@@ -106,13 +106,14 @@ public class AppUtil
                         }
                         else
                         {
-                            var errorMessage = new Markup("[red]Invalid time format. Please use the format {0}.[/]", dateTimeFormat);
+                            var errorMessage = $"[red]Date cannot be in the future.[/]";
                             return ValidationResult.Error(errorMessage.ToString());
                         }
                     }
                     else
                     {
-                        return ValidationResult.Error("[red]Invalid date format. Please use the format yyyy-MM-dd.[/]");
+                        var errorMessage = $"[red]Invalid date format. Please use the format {dateTimeFormat}.[/]";
+                        return ValidationResult.Error(errorMessage.ToString());
                     }
                 }));
 
@@ -133,13 +134,19 @@ public class AppUtil
                 .PromptStyle("yellow")
                 .Validate(input =>
                 {
-                    if (TimeSpan.TryParseExact(input.Trim(), ConfigSettings.TimeFormatType, CultureInfo.InvariantCulture, out TimeSpan parsedTime))
+                    var regex = new System.Text.RegularExpressions.Regex(@"^\d{2}:\d{2}$");
+                    if (!regex.IsMatch(input))
+                    {
+                        var errorMessage = $"[red]Invalid time format. Please use the format {ConfigSettings.TimeFormatString}.[/]";
+                        return ValidationResult.Error(errorMessage.ToString());
+                    } 
+                    else if (TimeSpan.TryParseExact(input.Trim(), ConfigSettings.TimeFormatType, CultureInfo.InvariantCulture, out TimeSpan parsedTime))
                     {
                         return ValidationResult.Success();
                     }
                     else
                     {
-                        var errorMessage = new Markup("[red]Invalid time format. Please use the format {0}.[/]", ConfigSettings.TimeFormatString);
+                        var errorMessage = $"[red]Invalid time duration. Please ensure the input format is correct.[/]";
                         return ValidationResult.Error(errorMessage.ToString());
                     }
                 }));
