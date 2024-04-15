@@ -64,11 +64,11 @@ public class AppUtil
             .Spinner(Spinner.Known.Dots)
             .Start("Processing...", ctx =>
             {
-                DatabaseSeeder.SeedSessions(sessionService, 40);
+                DatabaseSeeder.SeedSessions(sessionService, ConfigSettings.NumberOfCodingSessionsToSeed);
             });
 
         AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
-        AppUtil.PauseForContinueInput();
+        PauseForContinueInput();
     }
 
     /// <summary>

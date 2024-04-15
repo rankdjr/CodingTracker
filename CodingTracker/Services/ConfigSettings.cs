@@ -9,5 +9,6 @@ public class ConfigSettings
     public static string DateFormatShort => ConfigurationManager.AppSettings["DateFormatShort"]!;
     public static string DateFormatLong => ConfigurationManager.AppSettings["DateFormatLong"]!;
     public static string TimeFormat => ConfigurationManager.AppSettings["TimeFormat"]!;
+    public static int NumberOfCodingSessionsToSeed => Int32.Parse(ConfigurationManager.AppSettings["NumberOfCodingSessionsToSeed"]!);
 
 }

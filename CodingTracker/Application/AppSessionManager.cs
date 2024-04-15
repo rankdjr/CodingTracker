@@ -1,6 +1,7 @@
 ﻿using CodingTracker.Services;
 using CodingTracker.Util;
 using Spectre.Console;
+using System.Runtime.Intrinsics.X86;
 
 namespace CodingTracker.Application;
 
@@ -71,7 +72,9 @@ public class AppSessionManager
             // Adding columns with improved styling
             table.AddColumn(new TableColumn("[bold underline]ID[/]").LeftAligned());
             table.AddColumn(new TableColumn("[bold underline]Session Date[/]").Centered());
-            table.AddColumn(new TableColumn("[bold underline]Duration (Hours)[/]").Centered());
+            table.AddColumn(new TableColumn("[bold underline]Duration[/]").Centered()); // Adjusted from "Duration (Hours)" to "Duration"
+            table.AddColumn(new TableColumn("[bold underline]Start Time[/]").Centered());
+            table.AddColumn(new TableColumn("[bold underline]End Time[/]").Centered());
             table.AddColumn(new TableColumn("[bold underline]Date Created[/]").LeftAligned());
             table.AddColumn(new TableColumn("[bold underline]Date Updated[/]").LeftAligned());
 
@@ -80,10 +83,12 @@ public class AppSessionManager
             {
                 table.AddRow(
                     session.SessionId.ToString()!,
-                    session.SessionDate.ToString(),
-                    session.Duration.ToString(),
-                    session.DateCreated.ToString(),
-                    session.DateUpdated.ToString()
+                    session.SessionDate,
+                    session.Duration,
+                    session.StartTime ?? "N/A", // Handle nullable StartTime
+                    session.EndTime ?? "N/A",   // Handle nullable EndTime
+                    session.DateCreated,
+                    session.DateUpdated
                 );
             }
 

@@ -8,12 +8,14 @@ namespace CodingTracker.Models;
 public class CodingSessionModel
 {
     public int? SessionId { get; set; }
-    public string DateCreated { get; set; }
-    public string DateUpdated { get; set; }
-    public string SessionDate { get; set; }
-    public string Duration { get; set; }
+    public string DateCreated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+    public string DateUpdated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+    public string SessionDate { get; set; }= DateTime.UtcNow.ToString(ConfigSettings.DateFormatShort);
+    public string Duration { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormat);
     public string? StartTime { get; set; }
     public string? EndTime { get; set; }
+
+    public CodingSessionModel() { }
 
     /// <summary>
     /// Initializes a new instance of the CodingSession class with a specified session date and duration.

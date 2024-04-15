@@ -5,8 +5,8 @@ using System.Collections.Generic;
 namespace CodingTracker.Database;
 
 /// <summary>
-/// DatabaseSeeder contains methods to seed the database with initial data for habits and habit log entries.
-/// It utilizes random data generation for dates and quantities to provide a variety of sample data.
+/// DatabaseSeeder contains methods to seed the database with initial data for coding sessions.
+/// It utilizes random data generation for dates and durations to provide a variety of sample data.
 /// </summary>
 public class DatabaseSeeder
 {
@@ -22,9 +22,8 @@ public class DatabaseSeeder
     /// <summary>
     /// Seeds the database with log entries for existing habits, creating multiple logs per habit.
     /// </summary>
-    /// <param name="logEntryService">Service used to interact with the habit logs table.</param>
-    /// <param name="habitService">Service used to fetch habit data.</param>
-    /// <param name="numOfLogs">Number of log entries to create per habit.</param>
+    /// <param name="sessionService">Service used to interact with the session logs table.</param>
+    /// <param name="numOfSessions">Number of session log entries to create.</param>
     public static void SeedSessions(SessionService sessionService, int numOfSessions)
     {
         for (int i = 0; i < numOfSessions; i++)
