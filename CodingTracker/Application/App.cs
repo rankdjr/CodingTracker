@@ -64,7 +64,7 @@ public class App
                 case MainMenuOption.LogManualSession:
                     _newLogManager.Run();
                     break;
-                case MainMenuOption.ViewandEditPreviousSessions:
+                case MainMenuOption.ViewAndEditPreviousSessions:
                     _sessionManager.Run();
                     break;
                 case MainMenuOption.ViewAndEditGoals:
