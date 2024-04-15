@@ -61,6 +61,7 @@ public class AppNewLogManager
         if (_sessionService.InsertNewSession(newSession))
         {
             AnsiConsole.Markup("[green]Session successfully logged![/]");
+            Console.WriteLine("\n");
         }
         else
         {
@@ -82,6 +83,7 @@ public class AppNewLogManager
         if (_sessionService.InsertNewSession(newSession))
         {
             AnsiConsole.Markup("[green]Session successfully logged![/]");
+            Console.WriteLine("\n");
         }
         else
         {

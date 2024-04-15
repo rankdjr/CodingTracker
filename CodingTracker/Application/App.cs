@@ -17,6 +17,7 @@ public class App
     private AppGoalManager _goalManager;
     private AppReportManager _reportManager;
     private DatabaseContext _dbContext;
+    private AppUtil _appUtil;
 
 
     /// <summary>
@@ -36,7 +37,9 @@ public class App
         _sessionManager = new AppSessionManager(_sessionService);  
         _goalManager = new AppGoalManager();  
         _reportManager = new AppReportManager();
-        
+        _appUtil = new AppUtil();
+
+
     }
 
     /// <summary>
@@ -80,6 +83,7 @@ public class App
                 case MainMenuOption.Exit:
                     running = false;
                     AnsiConsole.Markup("[grey]Goodbye![/]");
+                    _appUtil.PrintNewLines(2);
                     break;
                 default:
                     AnsiConsole.Markup("[red]Invalid option selected.[/]");

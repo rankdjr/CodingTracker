@@ -135,4 +135,9 @@ public class AppUtil
 
         return TimeSpan.ParseExact(durationInput, ConfigSettings.TimeFormat, CultureInfo.InvariantCulture); 
     }
+
+    public void PrintNewLines(int numOfNewLines)
+    {
+        for (int i = 0; i < numOfNewLines; i++) { Console.WriteLine(); }
+    }
 }
