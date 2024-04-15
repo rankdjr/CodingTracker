@@ -54,7 +54,7 @@ public class AppNewLogManager
         AnsiConsole.Clear();
 
         DateTime sessionDate = _appUtil.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
-        TimeSpan duration = _appUtil.PromptForTimeSpan($"Enter the duration of the session. Please use the format [[ {ConfigSettings.TimeFormat} ]]:");
+        TimeSpan duration = _appUtil.PromptForTimeSpan($"Enter the duration of the session. Please use the format [[ {ConfigSettings.TimeFormatString} ]]:");
 
         CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
 

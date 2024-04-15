@@ -7,11 +7,11 @@ namespace CodingTracker.Models;
 /// </summary>
 public class CodingSessionModel
 {
-    public int? SessionId { get; set; }
+    public int? Id { get; set; }
     public string DateCreated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     public string DateUpdated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     public string SessionDate { get; set; }= DateTime.UtcNow.ToString(ConfigSettings.DateFormatShort);
-    public string Duration { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormat);
+    public string Duration { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormatType);
     public string? StartTime { get; set; }
     public string? EndTime { get; set; }
 
@@ -25,7 +25,7 @@ public class CodingSessionModel
     public CodingSessionModel(DateTime sessionDate, TimeSpan duration)
     {
         SessionDate = sessionDate.ToString(ConfigSettings.DateFormatShort);
-        Duration = duration.ToString(ConfigSettings.TimeFormat);
+        Duration = duration.ToString(ConfigSettings.TimeFormatType);
         DateCreated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
@@ -42,7 +42,7 @@ public class CodingSessionModel
         SessionDate = startTime.ToString(ConfigSettings.DateFormatShort);
         StartTime = startTime.ToString(ConfigSettings.DateFormatLong);
         EndTime = endTime.ToString(ConfigSettings.DateFormatLong);
-        Duration = (endTime - startTime).ToString(ConfigSettings.TimeFormat);  // Calculate duration based on start and end times
+        Duration = (endTime - startTime).ToString(ConfigSettings.TimeFormatType);  // Calculate duration based on start and end times
         DateCreated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
@@ -53,7 +53,7 @@ public class CodingSessionModel
     /// <param name="newDuration">New duration in hours.</param>
     public void UpdateDuration(TimeSpan newDuration)
     {
-        Duration = newDuration.ToString(ConfigSettings.TimeFormat);
+        Duration = newDuration.ToString(ConfigSettings.TimeFormatType);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);  // Reflects the latest update time
     }
 }

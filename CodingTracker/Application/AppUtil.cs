@@ -60,15 +60,26 @@ public class AppUtil
     {
         AnsiConsole.WriteLine("Starting database seeding...");
 
-        AnsiConsole.Status()
-            .Spinner(Spinner.Known.Dots)
-            .Start("Processing...", ctx =>
-            {
-                DatabaseSeeder.SeedSessions(sessionService, ConfigSettings.NumberOfCodingSessionsToSeed);
-            });
+        try
+        {
+            AnsiConsole.Status()
+                .Spinner(Spinner.Known.Dots)
+                .Start("Processing...", ctx =>
+                {
+                    // Call to seed sessions
+                    DatabaseSeeder.SeedSessions(sessionService, ConfigSettings.NumberOfCodingSessionsToSeed);
+                });
 
-        AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
-        PauseForContinueInput();
+            AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.Write(new Markup($"\n[red]Error seeding database: {ex.Message}[/]\n"));
+        }
+        finally
+        {
+            PauseForContinueInput();
+        }
     }
 
     /// <summary>
@@ -122,18 +133,18 @@ public class AppUtil
                 .PromptStyle("yellow")
                 .Validate(input =>
                 {
-                    if (TimeSpan.TryParseExact(input.Trim(), ConfigSettings.TimeFormat, CultureInfo.InvariantCulture, out TimeSpan parsedTime))
+                    if (TimeSpan.TryParseExact(input.Trim(), ConfigSettings.TimeFormatType, CultureInfo.InvariantCulture, out TimeSpan parsedTime))
                     {
                         return ValidationResult.Success();
                     }
                     else
                     {
-                        var errorMessage = new Markup("[red]Invalid time format. Please use the format {0}.[/]", ConfigSettings.TimeFormat);
+                        var errorMessage = new Markup("[red]Invalid time format. Please use the format {0}.[/]", ConfigSettings.TimeFormatString);
                         return ValidationResult.Error(errorMessage.ToString());
                     }
                 }));
 
-        return TimeSpan.ParseExact(durationInput, ConfigSettings.TimeFormat, CultureInfo.InvariantCulture); 
+        return TimeSpan.ParseExact(durationInput, ConfigSettings.TimeFormatType, CultureInfo.InvariantCulture); 
     }
 
     public void PrintNewLines(int numOfNewLines)

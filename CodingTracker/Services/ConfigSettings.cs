@@ -8,7 +8,8 @@ public class ConfigSettings
     public static string DbConnectionString => ConfigurationManager.AppSettings["DatabaseConnectionString"]!;
     public static string DateFormatShort => ConfigurationManager.AppSettings["DateFormatShort"]!;
     public static string DateFormatLong => ConfigurationManager.AppSettings["DateFormatLong"]!;
-    public static string TimeFormat => ConfigurationManager.AppSettings["TimeFormat"]!;
+    public static string TimeFormatType => ConfigurationManager.AppSettings["TimeFormatType"]!;
+    public static string TimeFormatString => ConfigurationManager.AppSettings["TimeFormatString"]!;
     public static int NumberOfCodingSessionsToSeed => Int32.Parse(ConfigurationManager.AppSettings["NumberOfCodingSessionsToSeed"]!);
 
 }

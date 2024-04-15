@@ -58,45 +58,42 @@ public class AppSessionManager
     }
     private void ViewSessions()
     {
-        var sessions = _sessionService.GetAllSessionRecords(); // This method needs to be implemented in your SessionService
+        var sessions = _sessionService.GetAllSessionRecords();
+
         if (sessions.Count == 0)
         {
             AppUtil.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
             _appUtil.PauseForContinueInput();
+            return;
         }
-        else
+
+        var table = new Table();
+        table.Border(TableBorder.Rounded);
+        table.BorderColor(Color.Grey);
+        table.Title("[yellow]Session Overview[/]");
+
+        table.AddColumn(new TableColumn("[bold underline]ID[/]").LeftAligned());
+        table.AddColumn(new TableColumn("[bold underline]Session Date[/]").Centered());
+        table.AddColumn(new TableColumn("[bold underline]Duration[/]").Centered());
+        table.AddColumn(new TableColumn("[bold underline]Start Time[/]").Centered());
+        table.AddColumn(new TableColumn("[bold underline]End Time[/]").Centered());
+        table.AddColumn(new TableColumn("[bold underline]Date Created[/]").LeftAligned());
+        table.AddColumn(new TableColumn("[bold underline]Date Updated[/]").LeftAligned());
+
+        foreach (var session in sessions)
         {
-            var table = new Table();
-            table.Border(TableBorder.Rounded);
-            table.BorderColor(Color.Grey);
-            table.Title("[yellow]Session Overview[/]");
-
-            // Adding columns with improved styling
-            table.AddColumn(new TableColumn("[bold underline]ID[/]").LeftAligned());
-            table.AddColumn(new TableColumn("[bold underline]Session Date[/]").Centered());
-            table.AddColumn(new TableColumn("[bold underline]Duration[/]").Centered()); // Adjusted from "Duration (Hours)" to "Duration"
-            table.AddColumn(new TableColumn("[bold underline]Start Time[/]").Centered());
-            table.AddColumn(new TableColumn("[bold underline]End Time[/]").Centered());
-            table.AddColumn(new TableColumn("[bold underline]Date Created[/]").LeftAligned());
-            table.AddColumn(new TableColumn("[bold underline]Date Updated[/]").LeftAligned());
-
-            // Add rows with conditional formatting
-            foreach (var session in sessions)
-            {
-                table.AddRow(
-                    session.SessionId.ToString()!,
-                    session.SessionDate,
-                    session.Duration,
-                    session.StartTime ?? "N/A", // Handle nullable StartTime
-                    session.EndTime ?? "N/A",   // Handle nullable EndTime
-                    session.DateCreated,
-                    session.DateUpdated
-                );
-            }
-
-            AnsiConsole.Write(table);
+            table.AddRow(
+                session.Id.ToString()!,
+                session.SessionDate,
+                session.Duration,
+                session.StartTime ?? "N/A", // Handle nullable StartTime
+                session.EndTime ?? "N/A",   // Handle nullable EndTime
+                session.DateCreated,
+                session.DateUpdated
+            );
         }
 
+        AnsiConsole.Write(table);
         _appUtil.PauseForContinueInput();
     }
 

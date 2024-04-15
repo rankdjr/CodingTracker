@@ -34,10 +34,10 @@ public class SessionService
             using (var connection = dbContext.GetNewDatabaseConnection())
             {
                 string sql = @"
-                    INSERT INTO tb_CodingSessions (DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
-                    VALUES (@DateCreated, @DateUpdated, @SessionDate, @Duration, @StartTime, @EndTime)";
+                INSERT INTO tb_CodingSessions (Id, DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
+                VALUES (@SessionId, @DateCreated, @DateUpdated, @SessionDate, @Duration, @StartTime, @EndTime)";
 
-                int result = connection.Execute(sql, session); 
+                int result = connection.Execute(sql, session);
                 return result > 0;
             }
         }
