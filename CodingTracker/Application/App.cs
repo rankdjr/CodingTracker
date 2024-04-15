@@ -38,8 +38,6 @@ public class App
         _goalManager = new AppGoalManager();  
         _reportManager = new AppReportManager();
         _appUtil = new AppUtil();
-
-
     }
 
     /// <summary>
@@ -52,15 +50,13 @@ public class App
         while (running)
         {
             AnsiConsole.Clear();
-            AnsiConsole.Markup("[underline green]Welcome to Coding Tracker![/]\n");
-            MainMenuOption selectedOption = AnsiConsole.Prompt(
-                new SelectionPrompt<MainMenuOption>()
-                    .Title("What would you like to do?")
-                    .PageSize(10)
-                    .AddChoices(Enum.GetValues<MainMenuOption>())
-            );
+            AppUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            var option = AnsiConsole.Prompt(
+            new SelectionPrompt<string>()
+                .PageSize(10)
+                .AddChoices(Enum.GetNames(typeof(MainMenuOption)).Select(AppUtil.SplitCamelCase)));
 
-            switch (selectedOption)
+            switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
             {
                 case MainMenuOption.StartNewSession:
                     _sessionManager.Run();
@@ -78,7 +74,7 @@ public class App
                     _reportManager.Run();
                     break;
                 case MainMenuOption.SeedDatabase:
-                    AppUtil.SeedDatabase(_sessionService);
+                    _appUtil.SeedDatabase(_sessionService);
                     break;
                 case MainMenuOption.Exit:
                     running = false;

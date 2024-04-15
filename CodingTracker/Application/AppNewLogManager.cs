@@ -61,14 +61,14 @@ public class AppNewLogManager
         if (_sessionService.InsertNewSession(newSession))
         {
             AnsiConsole.Markup("[green]Session successfully logged![/]");
-            Console.WriteLine("\n");
+            _appUtil.PrintNewLines(1);
         }
         else
         {
             AnsiConsole.Markup("[red]Failed to log the session. Please try again or check the system logs.[/]");
         }
 
-        AppUtil.PauseForContinueInput();
+        _appUtil.PauseForContinueInput();
     }
 
     private void LogSessionByStartEndTimes()
@@ -83,13 +83,13 @@ public class AppNewLogManager
         if (_sessionService.InsertNewSession(newSession))
         {
             AnsiConsole.Markup("[green]Session successfully logged![/]");
-            Console.WriteLine("\n");
+            _appUtil.PrintNewLines(1);
         }
         else
         {
             AnsiConsole.Markup("[red]Failed to log the session. Please try again or check the system logs.[/]");
         }
 
-        AppUtil.PauseForContinueInput();
+        _appUtil.PauseForContinueInput();
     }
 }

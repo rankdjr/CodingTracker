@@ -70,4 +70,26 @@ public class SessionService
             return new List<CodingSessionModel>();  // Return an empty list in case of error
         }
     }
+
+    /// <summary>
+    /// Deletes all coding session records from the database.
+    /// </summary>
+    /// <returns>True if the records were successfully deleted; otherwise, false.</returns>
+    public bool DeleteAllSessions()
+    {
+        try
+        {
+            using (var connection = dbContext.GetNewDatabaseConnection())
+            {
+                string sql = "DELETE FROM tb_CodingSessions";
+                int result = connection.Execute(sql);
+                return result > 0;  // Returns true if any rows were affected
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting sessions: {ex.Message}");
+            return false;
+        }
+    }
 }

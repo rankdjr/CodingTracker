@@ -46,7 +46,7 @@ public class AppUtil
     /// <summary>
     /// Pauses execution and waits for the user to press any key, displaying a prompt message.
     /// </summary>
-    public static void PauseForContinueInput()
+    public void PauseForContinueInput()
     {
         AnsiConsole.WriteLine("Press any key to continue...");
         Console.ReadKey();
@@ -56,7 +56,7 @@ public class AppUtil
     /// Seeds the application's database with initial data for habits and log entries.
     /// This method is used prepopulate the database with test data.
     /// </summary>
-    public static void SeedDatabase(SessionService sessionService)
+    public void SeedDatabase(SessionService sessionService)
     {
         AnsiConsole.WriteLine("Starting database seeding...");
 

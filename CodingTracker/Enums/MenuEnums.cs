@@ -2,7 +2,7 @@
 {
     StartNewSession,
     LogManualSession,
-    ViewandEditPreviousSessions,
+    ViewAndEditPreviousSessions,
     ViewAndEditGoals,
     ViewReports,
     SeedDatabase,

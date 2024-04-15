@@ -8,6 +8,7 @@ namespace CodingTracker.Application;
 public class AppSessionManager
 {
     private readonly SessionService _sessionService;
+    private AppUtil _appUtil;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppSessionManager"/> class.
@@ -16,6 +17,7 @@ public class AppSessionManager
     public AppSessionManager(SessionService sessionService)
     {
         _sessionService = sessionService;
+        _appUtil = new AppUtil();
     }
 
     /// <summary>
@@ -29,7 +31,7 @@ public class AppSessionManager
             AppUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Manage Habits")
+                .Title("Manage Coding Session Records")
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(ManageSessionsMenuOptions)).Select(AppUtil.SplitCamelCase)));
 
@@ -60,7 +62,7 @@ public class AppSessionManager
         if (sessions.Count == 0)
         {
             AppUtil.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
-            AppUtil.PauseForContinueInput();
+            _appUtil.PauseForContinueInput();
         }
         else
         {
@@ -95,7 +97,7 @@ public class AppSessionManager
             AnsiConsole.Write(table);
         }
 
-        AppUtil.PauseForContinueInput();
+        _appUtil.PauseForContinueInput();
     }
 
     private void EditSession()
@@ -110,6 +112,16 @@ public class AppSessionManager
 
     private void DeleteAllSession()
     {
-        // Implementation for deleting a session
+        if (_sessionService.DeleteAllSessions())
+        {
+            AnsiConsole.Markup("[green]All sessions have been successfully deleted![/]");
+            _appUtil.PrintNewLines(1);
+            _appUtil.PauseForContinueInput();
+        }
+        else
+        {
+            AnsiConsole.Markup("[red]\"No sessions were deleted. (The table might have been empty).[/]");
+            _appUtil.PauseForContinueInput();
+        }
     }
 }
