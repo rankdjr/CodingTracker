@@ -1,4 +1,10 @@
-﻿using System.Diagnostics;
-using Spectre.Console;
+﻿using CodingTracker.Application;
 
-// tbd
+class Program
+{
+    static void Main(string[] args)
+    {
+        App app = new App();
+        app.Run();
+    }
+}

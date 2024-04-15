@@ -7,16 +7,17 @@
 /// </summary>
 public class DatabaseInitializer
 {
-    private readonly DatabaseContext dbContext;
+    private readonly DatabaseContext _dbContext;
 
     private static readonly string CreateSessionTable = @"
         CREATE TABLE IF NOT EXISTS tb_CodingSessions (
             Id INTEGER PRIMARY KEY,
             DateCreated TEXT NOT NULL,
             DateUpdated TEXT NOT NULL,
-            SessionStartTime TEXT NULL,
-            SessionEndTime TEXT NULL,
-            Duration Float NOT NULL,
+            SessionDate TEXT NOT NULL,
+            Duration TEXT NOT NULL,
+            StartTime TEXT NULL,
+            EndTime TEXT NULL
         )";
 
     /// <summary>
@@ -25,7 +26,7 @@ public class DatabaseInitializer
     /// <param name="context">The database context used for obtaining database connections.</param>
     public DatabaseInitializer(DatabaseContext context)
     {
-        dbContext = context;
+        _dbContext = context;
     }
 
     /// <summary>
@@ -37,13 +38,13 @@ public class DatabaseInitializer
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        DbHelper.ExecuteCommand(CreateSessionTable, connection, transaction: transaction);
+                        DbUtil.ExecuteCommand(CreateSessionTable, connection, transaction: transaction);
                         transaction.Commit();
                     }
                     catch

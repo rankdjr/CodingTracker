@@ -1,4 +1,5 @@
 ﻿using System.Data.SQLite;
+using CodingTracker.Services;
 
 namespace CodingTracker.Database;
 
@@ -8,15 +9,14 @@ namespace CodingTracker.Database;
 /// </summary>
 public class DatabaseContext
 {
-    private readonly string dbConnectionString;
+    private readonly string _dbConnectionString;
 
     /// <summary>
     /// Initializes a new instance of the DatabaseContext with the specified database path.
     /// </summary>
-    /// <param name="dbPath">The file path of the SQLite database.</param>
-    public DatabaseContext(string dbPath)
+    public DatabaseContext()
     {
-        dbConnectionString = $"Data Source={dbPath};Version=3;";
+        _dbConnectionString = ConfigSettings.DbConnectionString;
     }
 
     /// <summary>
@@ -26,7 +26,7 @@ public class DatabaseContext
     /// <returns>An opened SQLiteConnection that can be used to perform database operations.</returns>
     public SQLiteConnection GetNewDatabaseConnection()
     {
-        var connection = new SQLiteConnection(dbConnectionString);
+        var connection = new SQLiteConnection(_dbConnectionString);
         try
         {
             connection.Open();
