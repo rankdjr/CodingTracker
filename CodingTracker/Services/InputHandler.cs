@@ -226,4 +226,18 @@ public class InputHandler
         AnsiConsole.WriteLine("Press any key to continue...");
         Console.ReadKey();
     }
+
+    public bool ConfirmAction(string actionPromptMessage) 
+    {
+        if (!AnsiConsole.Confirm(actionPromptMessage))
+        {
+            Utilities.PrintNewLines(1);
+            AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
+            Utilities.PrintNewLines(1);
+            PauseForContinueInput();
+            return false;
+        }
+
+        return true;
+    }
 }
