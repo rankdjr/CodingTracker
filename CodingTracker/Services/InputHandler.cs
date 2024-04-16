@@ -108,7 +108,7 @@ public class InputHandler
                 .Title("Select properties you want to edit:")
                 .NotRequired()
                 .PageSize(10)
-                .InstructionsText("[grey](Press [blue]<space>[/] to toggle a property, [green]<enter>[/] to accept)[/]")
+                .InstructionsText("[grey](Press [blue]<space>[/] to toggle a property, [green]<enter>[/] to accept, [yellow]<enter>[/] with no selections will cancel update)[/]")
                 .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
     }
 
