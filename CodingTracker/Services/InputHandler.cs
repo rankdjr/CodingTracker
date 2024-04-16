@@ -6,13 +6,6 @@ namespace CodingTracker.Services;
 
 public class InputHandler
 {
-    private Utilities _utilities;
-
-    public InputHandler()
-    {
-        _utilities = new Utilities();
-    }
-
     /// <summary>
     /// Prompts the user for a date input with custom messaging and validates the input.
     /// The input must be a valid date in the format "yyyy-MM-dd" and cannot be a future date.
@@ -130,7 +123,7 @@ public class InputHandler
                 .NotRequired()  // Not required to have filter criteria
                 .PageSize(10)
                 .InstructionsText(instructionText)
-                .UseConverter(options => _utilities.SplitCamelCase(options.ToString()))
+                .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
                 .AddChoices(Enum.GetValues<QueryOptions>()));
     }
 
@@ -141,7 +134,7 @@ public class InputHandler
             new SelectionPrompt<TimePeriod>()
                 .Title("Select [blueviolet]TimePeriod[/] filter criteria:")
                 .PageSize(10)
-                .UseConverter(options => _utilities.SplitCamelCase(options.ToString()))
+                .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
                 .AddChoices(Enum.GetValues<TimePeriod>()));
 
         int numOfPeriods = PromptForPositiveInteger($"Please enter number of {selectedTimePeriod} to retrieve:");
@@ -160,7 +153,7 @@ public class InputHandler
                 .Required() // required if order by query option was selected
                 .PageSize(10)
                 .InstructionsText(instructionText)
-                .UseConverter(options => _utilities.SplitCamelCase(options.ToString()))
+                .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
                 .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
 
         if (!selectedProperties.Any())
@@ -172,7 +165,7 @@ public class InputHandler
         AnsiConsole.WriteLine("Please rank the selected properties in order of importance (1 being the most important):");
         foreach (var property in selectedProperties)
         {
-            AnsiConsole.WriteLine($"{_utilities.SplitCamelCase(property.ToString())}");
+            AnsiConsole.WriteLine($"{Utilities.SplitCamelCase(property.ToString())}");
         }
 
         AnsiConsole.WriteLine("Enter the ranks in the same order as the properties listed above:");
