@@ -119,7 +119,8 @@ public class InputHandler
                 .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
     }
 
-    public List<QueryOptions> PromptForQueryFilterOptions()
+    // TODO: Refactor into custom query class
+    public List<QueryOptions> PromptForQueryOptions()
     {
         string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept, or [yellow]<enter>[/] with no selections to bypass)[/]";
 
@@ -129,10 +130,100 @@ public class InputHandler
                 .NotRequired()  // Not required to have filter criteria
                 .PageSize(10)
                 .InstructionsText(instructionText)
-                .UseConverter(criteria => _utilities.SplitCamelCase(criteria.ToString()))
+                .UseConverter(options => _utilities.SplitCamelCase(options.ToString()))
                 .AddChoices(Enum.GetValues<QueryOptions>()));
     }
 
+    // TODO: Refactor into custom query class
+    public void PromptForQueryFilterOptions()
+    {
+        TimePeriod selectedTimePeriod = AnsiConsole.Prompt(
+            new SelectionPrompt<TimePeriod>()
+                .Title("Select [blueviolet]TimePeriod[/] filter criteria:")
+                .PageSize(10)
+                .UseConverter(options => _utilities.SplitCamelCase(options.ToString()))
+                .AddChoices(Enum.GetValues<TimePeriod>()));
+
+        int numOfPeriods = PromptForPositiveInteger($"Please enter number of {selectedTimePeriod} to retrieve:");
+
+        Console.WriteLine($"{selectedTimePeriod}\t {numOfPeriods}");  
+    }
+
+    // TODO: Refactor into query custom class
+    public List<CodingSessionModel.EditableProperties> PromptForOrderByFilterOptions()
+    {
+        string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept)[/]";
+
+        var selectedProperties = AnsiConsole.Prompt(
+            new MultiSelectionPrompt<CodingSessionModel.EditableProperties>()
+                .Title("Select [blueviolet]Order By[/] filter criteria:")
+                .Required() // required if order by query option was selected
+                .PageSize(10)
+                .InstructionsText(instructionText)
+                .UseConverter(options => _utilities.SplitCamelCase(options.ToString()))
+                .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
+
+        if (!selectedProperties.Any())
+            return selectedProperties;
+
+        // Ranking the selected properties
+        List<CodingSessionModel.EditableProperties> rankedProperties = new List<CodingSessionModel.EditableProperties>();
+
+        AnsiConsole.WriteLine("Please rank the selected properties in order of importance (1 being the most important):");
+        foreach (var property in selectedProperties)
+        {
+            AnsiConsole.WriteLine($"{_utilities.SplitCamelCase(property.ToString())}");
+        }
+
+        AnsiConsole.WriteLine("Enter the ranks in the same order as the properties listed above:");
+        var ranks = Console.ReadLine().Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+        // Assuming the user enters the correct number of ranks
+        try
+        {
+            int[] rankIndices = ranks.Select(int.Parse).ToArray();
+            for (int i = 0; i < rankIndices.Length; i++)
+            {
+                // Insert the property into the ranked list based on user input
+                rankedProperties.Insert(rankIndices[i] - 1, selectedProperties[i]);
+            }
+        }
+        catch
+        {
+            AnsiConsole.Markup("[red]Error in parsing ranks. Please try again.[/]");
+            // You might want to add some error handling or retry logic here
+        }
+
+        return rankedProperties;
+    }
+
+    /// <summary>
+    /// Prompts the user for a positive integer input with custom messaging and validates the input.
+    /// </summary>
+    /// <param name="promptMessage">The message displayed to the user when asking for input.</param>
+    /// <returns>The validated positive integer input from the user. If the input is not a valid integer or is not positive, 
+    /// the function continues to prompt the user until a valid positive integer is entered.</returns>
+    public int PromptForPositiveInteger(string promptMessage)
+    {
+        return AnsiConsole.Prompt(
+            new TextPrompt<int>(promptMessage)
+                .Validate(input =>
+                {
+                    // Attempt to parse the input as an integer
+                    if (!int.TryParse(input.ToString().Trim(), out int parsedQuantity))
+                    {
+                        return ValidationResult.Error("[red]Please enter a valid integer number.[/]");
+                    }
+
+                    // Check if the parsed integer is positive
+                    if (parsedQuantity <= 0)
+                    {
+                        return ValidationResult.Error("[red]Please enter a positive number.[/]");
+                    }
+
+                    return ValidationResult.Success();
+                }));
+    }
 
     /// <summary>
     /// Pauses execution and waits for the user to press any key, displaying a prompt message.
