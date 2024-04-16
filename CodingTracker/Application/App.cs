@@ -24,7 +24,6 @@ public class App
     /// <summary>
     /// Initializes a new instance of App with the necessary services to manage coding sessions, goals, and reports.
     /// </summary>
-    /// <param name="sessionService">Service to manage session-related operations.</param>
     public App()
     {
         // Setup database
