@@ -80,7 +80,17 @@ public class AppSessionManager
             return;
         }
 
-        /*PromptForQueryFilterOptions*/
+        List<QueryOptions> queryOptions = _inputHandler.PromptForQueryFilterOptions();
+
+        if (queryOptions.Contains(QueryOptions.FilterByTimePeriod))
+        {
+           // prompt for time period selections
+        }
+
+        if (queryOptions.Contains(QueryOptions.OrderBy))
+        {
+           // multiselect prompt for columns and ASC or DESC
+        }
 
         var table = new Table();
         table.Border(TableBorder.Rounded);
@@ -236,19 +246,4 @@ public class AppSessionManager
             _inputHandler.PauseForContinueInput();
         }
     }
-
-    //public void PromptForQueryFilterOptions()
-    //{
-    //    var filterSelections = AnsiConsole.Prompt(
-    //        new MultiSelectionPrompt<QueryOptions>()
-    //            .Title("Select filter criteria [blueviolet]TimePeriod[/] and/or [blueviolet]Order By[/]?")
-    //            .NotRequired() // Not required to have filter criteria
-    //            .PageSize(10)
-    //            .InstructionsText(
-    //               "[grey](Press [blue]<space>[/] to toggle a selection, " +
-    //               "[green]<enter>[/] to accept)[/], " +
-    //               "or [yellow]<enter>[/] with no selections to bypass)[/]")
-    //           .UseConverter(criteria => _utilities.SplitCamelCase(criteria.ToString()))
-    //           .AddChoices(Enum.GetValues<QueryOptions>()));
-    //}
 }

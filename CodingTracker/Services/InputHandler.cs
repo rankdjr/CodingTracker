@@ -6,7 +6,13 @@ namespace CodingTracker.Services;
 
 public class InputHandler
 {
-    
+    private Utilities _utilities;
+
+    public InputHandler()
+    {
+        _utilities = new Utilities();
+    }
+
     /// <summary>
     /// Prompts the user for a date input with custom messaging and validates the input.
     /// The input must be a valid date in the format "yyyy-MM-dd" and cannot be a future date.
@@ -112,6 +118,21 @@ public class InputHandler
                 .InstructionsText("[grey](Press [blue]<space>[/] to toggle a property, [green]<enter>[/] to accept, [yellow]<enter>[/] with no selections will cancel update)[/]")
                 .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
     }
+
+    public List<QueryOptions> PromptForQueryFilterOptions()
+    {
+        string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept, or [yellow]<enter>[/] with no selections to bypass)[/]";
+
+        return AnsiConsole.Prompt(
+            new MultiSelectionPrompt<QueryOptions>()
+                .Title("Select filter criteria [blueviolet]TimePeriod[/] and/or [blueviolet]Order By[/]?")
+                .NotRequired()  // Not required to have filter criteria
+                .PageSize(10)
+                .InstructionsText(instructionText)
+                .UseConverter(criteria => _utilities.SplitCamelCase(criteria.ToString()))
+                .AddChoices(Enum.GetValues<QueryOptions>()));
+    }
+
 
     /// <summary>
     /// Pauses execution and waits for the user to press any key, displaying a prompt message.
