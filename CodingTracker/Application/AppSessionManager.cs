@@ -1,4 +1,5 @@
-﻿using CodingTracker.Services;
+﻿using CodingTracker.Models;
+using CodingTracker.Services;
 using CodingTracker.Util;
 using Spectre.Console;
 using System.Runtime.Intrinsics.X86;
@@ -99,12 +100,55 @@ public class AppSessionManager
 
     private void EditSession()
     {
-        // Implementation for editing an existing session
+        // https://spectreconsole.net/prompts/multiselection
+        // Allow users to select from session list
+        // output selected session at top level
+        // save coding session as new CodingSessionModel object
+        // allow users to multi-select the fields they want to edit
+        // prompt users for new entries based on multi-select
+        // use CodingSessionModel to set new values
+
+        // pass new object to DAO and update record by id
     }
 
     private void DeleteSession()
     {
-        // Implementation for deleting a session
+        var entries = _sessionService.GetAllSessionRecords();
+        if (!entries.Any())
+        {
+            AppUtil.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
+            _appUtil.PauseForContinueInput();
+            return;
+        }
+
+        CodingSessionModel sessionEntrySelection = AnsiConsole.Prompt(
+            new SelectionPrompt<CodingSessionModel>()
+                .Title("[yellow]Which log entry would you like to delete?[/]")
+                .PageSize(10)
+                .MoreChoicesText("[grey](Move up and down to see more log entries)[/]")
+                .UseConverter(entry =>
+                    $"[bold yellow]ID:[/] {entry.Id}, " +
+                    $"[bold cyan]Session Date:[/] {entry.SessionDate}, " +
+                    (entry.StartTime != null ? $"[bold green]Start Time:[/] {entry.StartTime}, " : "") +
+                    (entry.EndTime != null ? $"[bold magenta]End Time:[/] {entry.EndTime}, " : "") +
+                    $"[bold blue]Duration:[/] {entry.Duration}")
+                .AddChoices(entries));
+
+
+        if (AnsiConsole.Confirm($"Are you sure you want to delete this log entry (ID: {sessionEntrySelection.Id})?"))
+        {
+            bool result = _sessionService.DeleteSessionRecord(sessionEntrySelection.Id!.Value);
+            if (result)
+                AppUtil.AnsiWriteLine(new Markup("[green]Log entry successfully deleted![/]"));
+            else
+                AppUtil.AnsiWriteLine(new Markup("[red]Failed to delete log entry. It may no longer exist or the database could be locked.[/]"));
+        }
+        else
+        {
+            AppUtil.AnsiWriteLine(new Markup("[yellow]Operation cancelled.[/]"));
+        }
+
+        _appUtil.PauseForContinueInput();
     }
 
     private void DeleteAllSession()

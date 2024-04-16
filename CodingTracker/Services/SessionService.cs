@@ -1,6 +1,5 @@
 ﻿using CodingTracker.Database;
 using CodingTracker.Models;
-using System.Data.SQLite;
 using Dapper;
 
 namespace CodingTracker.Services;
@@ -90,6 +89,29 @@ public class SessionService
         catch (Exception ex)
         {
             Console.WriteLine($"Error deleting sessions: {ex.Message}");
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// Deletes a single coding session record from the database based on the specified session ID.
+    /// </summary>
+    /// <param name="sessionId">The ID of the session to be deleted. This is an integer representing the unique identifier for a session.</param>
+    /// <returns>Returns <c>true</c> if the deletion was successful and affected one or more rows in the database; otherwise, returns <c>false</c>.</returns>
+    public bool DeleteSessionRecord(int sessionId)
+    {
+        try
+        {
+            using (var connection = dbContext.GetNewDatabaseConnection())
+            {
+                string sql = "DELETE FROM tb_CodingSessions WHERE Id = @SessionId";
+                int result = connection.Execute(sql, new { SessionId = sessionId });
+                return result > 0; 
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting session with ID {sessionId}: {ex.Message}");
             return false;
         }
     }

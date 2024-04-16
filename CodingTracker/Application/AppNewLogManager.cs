@@ -59,6 +59,7 @@ public class AppNewLogManager
         DateTime sessionDate = _appUtil.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
         TimeSpan duration = _appUtil.PromptForTimeSpan($"Enter the duration of the session. Please use the format [[ {ConfigSettings.TimeFormatString} ]]:");
 
+        // Create new coding session object via constructor (duration manually entered here)
         CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
 
         int newRecordID = _sessionService.InsertNewSession(newSession);
@@ -95,6 +96,7 @@ public class AppNewLogManager
             }
         } while (endTime <= startTime);
 
+        // Create new coding session object via constructor (duration automatically calculated)
         CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
         int newRecordID = _sessionService.InsertNewSession(newSession);
         if (newRecordID != -1)

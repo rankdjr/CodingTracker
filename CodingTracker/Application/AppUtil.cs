@@ -93,7 +93,7 @@ public class AppUtil
     {
         var dateTimeFormat = datePromptFormat == DatePrompt.Short ? ConfigSettings.DateFormatShort : ConfigSettings.DateFormatLong;
 
-        string dateTimeInput =  AnsiConsole.Prompt(
+        string dateTimeInput = AnsiConsole.Prompt(
             new TextPrompt<String>(promptMessage)
                 .PromptStyle("yellow")
                 .Validate(input =>
