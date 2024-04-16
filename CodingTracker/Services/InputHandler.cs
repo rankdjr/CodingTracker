@@ -1,11 +1,10 @@
 ﻿using CodingTracker.Models;
-using CodingTracker.Services;
 using Spectre.Console;
 using System.Globalization;
 
-namespace CodingTracker.Application;
+namespace CodingTracker.Services;
 
-public class UserInput
+public class InputHandler
 {
     /// <summary>
     /// Prompts the user for a date input with custom messaging and validates the input.
@@ -19,7 +18,7 @@ public class UserInput
         var dateTimeFormat = datePromptFormat == DatePrompt.Short ? ConfigSettings.DateFormatShort : ConfigSettings.DateFormatLong;
 
         string dateTimeInput = AnsiConsole.Prompt(
-            new TextPrompt<String>(promptMessage)
+            new TextPrompt<string>(promptMessage)
                 .PromptStyle("yellow")
                 .Validate(input =>
                 {
@@ -86,7 +85,7 @@ public class UserInput
     /// <param name="sessionLogs">A list of CodingSessionModel instances representing the available sessions for selection.</param>
     /// <param name="promptMessage">The message displayed to the user above the selection menu.</param>
     /// <returns>The selected CodingSessionModel instance from the user. The selection is made through a console-based interactive menu.</returns>
-    public CodingSessionModel PromptForSessionSelection(List<CodingSessionModel> sessionLogs, string promptMessage)
+    public CodingSessionModel PromptForSessionListSelection(List<CodingSessionModel> sessionLogs, string promptMessage)
     {
         return AnsiConsole.Prompt(
             new SelectionPrompt<CodingSessionModel>()
@@ -102,10 +101,21 @@ public class UserInput
                 .AddChoices(sessionLogs));
     }
 
-        /// <summary>
-        /// Pauses execution and waits for the user to press any key, displaying a prompt message.
-        /// </summary>
-        public void PauseForContinueInput()
+    public List<CodingSessionModel.EditableProperties> PromptForSessionPropertiesSelection(string promptMessage)
+    {
+        return AnsiConsole.Prompt(
+            new MultiSelectionPrompt<CodingSessionModel.EditableProperties>()
+                .Title("Select properties you want to edit:")
+                .NotRequired()
+                .PageSize(10)
+                .InstructionsText("[grey](Press [blue]<space>[/] to toggle a property, [green]<enter>[/] to accept)[/]")
+                .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
+    }
+
+    /// <summary>
+    /// Pauses execution and waits for the user to press any key, displaying a prompt message.
+    /// </summary>
+    public void PauseForContinueInput()
     {
         AnsiConsole.WriteLine("Press any key to continue...");
         Console.ReadKey();

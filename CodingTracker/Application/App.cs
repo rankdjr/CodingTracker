@@ -1,6 +1,6 @@
-﻿using CodingTracker.Database;
+﻿using CodingTracker.DAO;
+using CodingTracker.Database;
 using CodingTracker.Services;
-using CodingTracker.Util;
 using Spectre.Console;
 
 namespace CodingTracker.Application;
@@ -11,13 +11,14 @@ namespace CodingTracker.Application;
 /// </summary>
 public class App
 {
-    private SessionService _sessionService;
     private AppNewLogManager _newLogManager;
     private AppSessionManager _sessionManager;
     private AppGoalManager _goalManager;
     private AppReportManager _reportManager;
     private DatabaseContext _dbContext;
-    private AppUtil _appUtil;
+    private DatabaseSeeder _dbSeeder;
+    private CodingSessionDAO _codingSessionDAO;
+    private Utilities _utilities;
 
 
     /// <summary>
@@ -28,16 +29,17 @@ public class App
     {
         // Setup database
         _dbContext = new DatabaseContext();
+        _dbSeeder = new DatabaseSeeder();
+        _codingSessionDAO = new CodingSessionDAO(_dbContext);
         DatabaseInitializer dbInitializer = new DatabaseInitializer(_dbContext);
         dbInitializer.Initialize();
 
         // Initialize services
-        _sessionService = new SessionService(_dbContext);
-        _newLogManager = new AppNewLogManager(_sessionService);
-        _sessionManager = new AppSessionManager(_sessionService);  
+        _newLogManager = new AppNewLogManager(_codingSessionDAO);
+        _sessionManager = new AppSessionManager(_codingSessionDAO);
         _goalManager = new AppGoalManager();  
         _reportManager = new AppReportManager();
-        _appUtil = new AppUtil();
+        _utilities = new Utilities();
     }
 
     /// <summary>
@@ -50,12 +52,12 @@ public class App
         while (running)
         {
             AnsiConsole.Clear();
-            _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            _utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(MainMenuOption))
-                .Select(_appUtil.SplitCamelCase)));
+                .Select(_utilities.SplitCamelCase)));
 
             switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
             {
@@ -75,12 +77,12 @@ public class App
                     _reportManager.Run();
                     break;
                 case MainMenuOption.SeedDatabase:
-                    _appUtil.SeedDatabase(_sessionService);
+                    _dbSeeder.SeedDatabase(_codingSessionDAO);
                     break;
                 case MainMenuOption.Exit:
                     running = false;
                     AnsiConsole.Markup("[grey]Goodbye![/]");
-                    _appUtil.PrintNewLines(2);
+                    _utilities.PrintNewLines(2);
                     break;
                 default:
                     AnsiConsole.Markup("[red]Invalid option selected.[/]");

@@ -1,6 +1,7 @@
-﻿using CodingTracker.Models;
+﻿using CodingTracker.DAO;
+using CodingTracker.Models;
 using CodingTracker.Services;
-using System.Collections.Generic;
+using Spectre.Console;
 
 namespace CodingTracker.Database;
 
@@ -11,12 +12,14 @@ namespace CodingTracker.Database;
 public class DatabaseSeeder
 {
     private static Random _random = new Random();
+    private InputHandler _inputHandler;
 
-    static DatabaseSeeder()
+    public DatabaseSeeder()
     {
         // Using the current time to generate a seed
         int seed = (int)DateTime.Now.Ticks;
         _random = new Random(seed);
+        _inputHandler = new InputHandler();
     }
 
     /// <summary>
@@ -24,7 +27,7 @@ public class DatabaseSeeder
     /// </summary>
     /// <param name="sessionService">Service used to interact with the session logs table.</param>
     /// <param name="numOfSessions">Number of session log entries to create.</param>
-    public static void SeedSessions(SessionService sessionService, int numOfSessions)
+    public void SeedSessions(CodingSessionDAO sessionService, int numOfSessions)
     {
         for (int i = 0; i < numOfSessions / 2; i++)
         {
@@ -34,16 +37,46 @@ public class DatabaseSeeder
             DateTime sessionDate = DateTime.Today.AddDays(-_random.Next(1, 30));
 
             CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
-            sessionService.InsertNewSession(newSession);  
+            sessionService.InsertNewSession(newSession);
         }
 
         for (int i = 0; i < numOfSessions / 2; i++)
         {
             DateTime endTime = DateTime.Today.AddDays(-_random.Next(1, 30));
-            DateTime startTime = endTime.AddMinutes(-_random.Next(1,180));
-            
+            DateTime startTime = endTime.AddMinutes(-_random.Next(1, 180));
+
             CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
             sessionService.InsertNewSession(newSession);
+        }
+    }
+
+    /// <summary>
+    /// Seeds the application's database with initial data for habits and log entries.
+    /// This method is used prepopulate the database with test data.
+    /// </summary>
+    public void SeedDatabase(CodingSessionDAO sessionService)
+    {
+        AnsiConsole.WriteLine("Starting database seeding...");
+
+        try
+        {
+            AnsiConsole.Status()
+                .Spinner(Spinner.Known.Dots)
+                .Start("Processing...", ctx =>
+                {
+                    // Call to seed sessions
+                    SeedSessions(sessionService, ConfigSettings.NumberOfCodingSessionsToSeed);
+                });
+
+            AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
+        }
+        catch (Exception ex)
+        {
+            AnsiConsole.Write(new Markup($"\n[red]Error seeding database: {ex.Message}[/]\n"));
+        }
+        finally
+        {
+            _inputHandler.PauseForContinueInput();
         }
     }
 }

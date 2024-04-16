@@ -1,22 +1,21 @@
-﻿using CodingTracker.Application;
+﻿using CodingTracker.DAO;
 using CodingTracker.Database;
-using CodingTracker.Services;
 using Spectre.Console;
 using System.Text.RegularExpressions;
 
-namespace CodingTracker.Util;
+namespace CodingTracker.Services;
 
 /// <summary>
 /// ApplicationHelper provides utility methods to enhance the user interface interactions and string manipulations.
 /// It includes methods for displaying messages, parsing enums, and splitting camel case strings.
 /// </summary>
-public class AppUtil
+public class Utilities
 {
-    private UserInput _userInput;
+    private InputHandler _inputHandler;
 
-    public AppUtil()
+    public Utilities()
     {
-        _userInput = new UserInput();
+        _inputHandler = new InputHandler();
     }
 
     /// <summary>
@@ -50,35 +49,7 @@ public class AppUtil
         return Regex.Replace(input, "([a-z])([A-Z])", "$1 $2");
     }
 
-    /// <summary>
-    /// Seeds the application's database with initial data for habits and log entries.
-    /// This method is used prepopulate the database with test data.
-    /// </summary>
-    public void SeedDatabase(SessionService sessionService)
-    {
-        AnsiConsole.WriteLine("Starting database seeding...");
-
-        try
-        {
-            AnsiConsole.Status()
-                .Spinner(Spinner.Known.Dots)
-                .Start("Processing...", ctx =>
-                {
-                    // Call to seed sessions
-                    DatabaseSeeder.SeedSessions(sessionService, ConfigSettings.NumberOfCodingSessionsToSeed);
-                });
-
-            AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
-        }
-        catch (Exception ex)
-        {
-            AnsiConsole.Write(new Markup($"\n[red]Error seeding database: {ex.Message}[/]\n"));
-        }
-        finally
-        {
-            _userInput.PauseForContinueInput();
-        }
-    }
+    
 
     public void PrintNewLines(int numOfNewLines)
     {

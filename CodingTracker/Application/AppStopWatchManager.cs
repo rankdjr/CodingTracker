@@ -5,7 +5,7 @@ using Spectre.Console;
 
 namespace CodingTracker.Application;
 
-public class AppNewLogManager
+public class AppStopWatchManager
 {
     private readonly CodingSessionDAO _codingSessionDAO;
     private Utilities _appUtil;
@@ -14,8 +14,8 @@ public class AppNewLogManager
     /// <summary>
     /// Initializes a new instance of the <see cref="AppNewLogManager"/> class.
     /// </summary>
-    /// <param name="sessionService">The service for managing habit data.</param>
-    public AppNewLogManager(CodingSessionDAO codingSessionDAO)
+    /// <param name="codingSessionDAO">The service for managing habit data.</param>
+    public AppStopWatchManager(CodingSessionDAO codingSessionDAO)
     {
         _codingSessionDAO = codingSessionDAO;
         _appUtil = new Utilities();

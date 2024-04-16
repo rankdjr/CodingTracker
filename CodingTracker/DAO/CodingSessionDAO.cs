@@ -1,14 +1,15 @@
 ﻿using CodingTracker.Database;
 using CodingTracker.Models;
+using CodingTracker.Services;
 using Dapper;
 
-namespace CodingTracker.Services;
+namespace CodingTracker.DAO;
 
 /// <summary>
 /// SessionService handles all database operations related to coding sessions, including CRUD operations and queries.
 /// It uses the DatabaseContext to create connections and execute SQL commands data.
 /// </summary>
-public class SessionService
+public class CodingSessionDAO
 {
     private readonly DatabaseContext dbContext;
 
@@ -16,7 +17,7 @@ public class SessionService
     /// Constructs a SessionService with a specified DatabaseContext for database operations.
     /// </summary>
     /// <param name="context">Database context to manage connections.</param>
-    public SessionService(DatabaseContext context)
+    public CodingSessionDAO(DatabaseContext context)
     {
         dbContext = context;
     }
@@ -106,7 +107,7 @@ public class SessionService
             {
                 string sql = "DELETE FROM tb_CodingSessions WHERE Id = @SessionId";
                 int result = connection.Execute(sql, new { SessionId = sessionId });
-                return result > 0; 
+                return result > 0;
             }
         }
         catch (Exception ex)
@@ -115,4 +116,47 @@ public class SessionService
             return false;
         }
     }
+
+    /// <summary>
+    /// Updates an existing session in the database using the provided session model.
+    /// </summary>
+    /// <param name="session">The session model containing the updated values and the session's ID.</param>
+    /// <returns>Returns <c>true</c> if the update was successful and affected at least one row; otherwise, <c>false</c>.</returns>
+    public bool UpdateSession(CodingSessionModel session)
+    {
+        try
+        {
+            using (var connection = dbContext.GetNewDatabaseConnection())
+            {
+                string sql = @"
+                UPDATE tb_CodingSessions
+                SET
+                    DateUpdated = @DateUpdated,
+                    SessionDate = @SessionDate,
+                    Duration = @Duration,
+                    StartTime = @StartTime,
+                    EndTime = @EndTime
+                WHERE Id = @Id;";
+
+                int rowsAffected = connection.Execute(sql, new
+                {
+                    DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong),
+                    session.SessionDate,
+                    session.Duration,
+                    session.StartTime,
+                    session.EndTime,
+                    session.Id
+                });
+
+                return rowsAffected > 0;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating session with ID {session.Id}.");
+            Console.WriteLine($"{ex.Message}");
+            return false;
+        }
+    }
+
 }

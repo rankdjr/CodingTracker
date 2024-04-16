@@ -1,4 +1,5 @@
 ﻿using CodingTracker.Services;
+using System.Security.Cryptography;
 
 namespace CodingTracker.Models;
 
@@ -14,6 +15,13 @@ public class CodingSessionModel
     public string Duration { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormatType);
     public string? StartTime { get; set; }
     public string? EndTime { get; set; }
+    public enum EditableProperties
+    {
+        SessionDate,
+        Duration,
+        StartTime,
+        EndTime
+    }
 
     public CodingSessionModel() { }
 
@@ -51,9 +59,43 @@ public class CodingSessionModel
     /// Updates the duration of the coding session.
     /// </summary>
     /// <param name="newDuration">New duration in hours.</param>
-    public void UpdateDuration(TimeSpan newDuration)
+    public void SetDuration(TimeSpan newDuration)
     {
         Duration = newDuration.ToString(ConfigSettings.TimeFormatType);
-        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);  // Reflects the latest update time
+        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+    }
+
+    /// <summary>
+    /// Sets the session date property to a formatted string based on the provided DateTime value.
+    /// Also updates the 'DateUpdated' property to the current UTC date and time.
+    /// </summary>
+    /// <param name="date">The DateTime to be formatted and set as the session date.</param>
+    public void SetSessionDate(DateTime date)
+    {
+        SessionDate = date.ToString(ConfigSettings.DateFormatShort);
+        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+    }
+
+    /// <summary>
+    /// Sets the start time property to a formatted string based on the provided DateTime value.
+    /// Also updates the 'DateUpdated' property to the current UTC date and time.
+    /// </summary>
+    /// <param name="date">The DateTime to be formatted and set as the start time.</param>
+    public void SetStartTime(DateTime date)
+    {
+        SessionDate = date.ToString(ConfigSettings.DateFormatLong);
+        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+    }
+
+    /// <summary>
+    /// Sets the end time property to a formatted string based on the provided DateTime value.
+    /// Also updates the 'DateUpdated' property to the current UTC date and time.
+    /// </summary>
+    /// <param name="date">The DateTime to be formatted and set as the end time.</param>
+
+    public void SetEndTime(DateTime date)
+    {
+        SessionDate = date.ToString(ConfigSettings.DateFormatLong);
+        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 }

@@ -1,6 +1,6 @@
-﻿using CodingTracker.Models;
+﻿using CodingTracker.DAO;
+using CodingTracker.Models;
 using CodingTracker.Services;
-using CodingTracker.Util;
 using Spectre.Console;
 using System.Runtime.Intrinsics.X86;
 
@@ -8,19 +8,19 @@ namespace CodingTracker.Application;
 
 public class AppSessionManager
 {
-    private readonly SessionService _sessionService;
-    private AppUtil _appUtil;
-    private UserInput _userInput;
+    private readonly CodingSessionDAO _codingSessionDAO;
+    private Utilities _appUtil;
+    private InputHandler _inputHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppSessionManager"/> class.
     /// </summary>
     /// <param name="sessionService">The service for managing habit data.</param>
-    public AppSessionManager(SessionService sessionService)
+    public AppSessionManager(CodingSessionDAO codingSessionDAO)
     {
-        _sessionService = sessionService;
-        _appUtil = new AppUtil();
-        _userInput = new UserInput();
+        _codingSessionDAO = codingSessionDAO;
+        _appUtil = new Utilities();
+        _inputHandler = new InputHandler();
     }
 
     /// <summary>
@@ -62,12 +62,12 @@ public class AppSessionManager
     }
     private void ViewSessions()
     {
-        var sessions = _sessionService.GetAllSessionRecords();
+        var sessions = _codingSessionDAO.GetAllSessionRecords();
 
         if (sessions.Count == 0)
         {
             _appUtil.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
-            _userInput.PauseForContinueInput();
+            _inputHandler.PauseForContinueInput();
             return;
         }
 
@@ -98,38 +98,81 @@ public class AppSessionManager
         }
 
         AnsiConsole.Write(table);
-        _userInput.PauseForContinueInput();
+        _inputHandler.PauseForContinueInput();
     }
 
     private void EditSession()
     {
         // https://spectreconsole.net/prompts/multiselection
-        // Allow users to select from session list
-        // output selected session at top level
-        // save coding session as new CodingSessionModel object
-        // allow users to multi-select the fields they want to edit
-        // prompt users for new entries based on multi-select
-        // use CodingSessionModel to set new values
+        List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
+        if (!sessionLogs.Any())
+        {
+            _appUtil.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
+            _inputHandler.PauseForContinueInput();
+            return;
+        }
 
-        // pass new object to DAO and update record by id
+        CodingSessionModel sessionEntrySelection = _inputHandler.PromptForSessionListSelection(
+            sessionLogs, "[yellow]Which log entry would you like to delete?[/]");
+
+        string promptMessage = "Select properties you want to edit:";
+        List<CodingSessionModel.EditableProperties> propertiesToEdit = _inputHandler.PromptForSessionPropertiesSelection(promptMessage);
+
+        foreach (var property in propertiesToEdit)
+        {
+            DateTime newDate;
+            TimeSpan newDuration;
+
+            switch (property)
+            {
+                case CodingSessionModel.EditableProperties.SessionDate:
+                    newDate = _inputHandler.PromptForDate($"Enter the SessionDate for log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
+                    sessionEntrySelection.SetSessionDate(newDate);
+                    break;
+                case CodingSessionModel.EditableProperties.Duration:
+                    newDuration = _inputHandler.PromptForTimeSpan($"Enter new Duration for log entry {ConfigSettings.TimeFormatString}:");
+                    sessionEntrySelection.SetDuration(newDuration);
+                    break;
+                case CodingSessionModel.EditableProperties.StartTime:
+                    newDate = _inputHandler.PromptForDate($"Enter new StartTime for log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Long);
+                    sessionEntrySelection.SetStartTime(newDate);
+                    break;
+                case CodingSessionModel.EditableProperties.EndTime:
+                    newDate = _inputHandler.PromptForDate($"Enter the EndTime for log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Long);
+                    sessionEntrySelection.SetStartTime(newDate);
+                    break;
+            }
+        }
+
+        if (_codingSessionDAO.UpdateSession(sessionEntrySelection))
+        {
+            AnsiConsole.Markup("[green]Coding session successfully updated![/]");
+            _appUtil.PrintNewLines(1);
+            _inputHandler.PauseForContinueInput();
+        }
+        else
+        {
+            AnsiConsole.Markup("[red]No Coding sessions were updated.[/]");
+            _inputHandler.PauseForContinueInput();
+        }
     }
 
     private void DeleteSession()
     {
-        List<CodingSessionModel> sessionLogs = _sessionService.GetAllSessionRecords();
+        List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
         if (!sessionLogs.Any())
         {
             _appUtil.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
-            _userInput.PauseForContinueInput();
+            _inputHandler.PauseForContinueInput();
             return;
         }
 
-        CodingSessionModel sessionEntrySelection = _userInput.PromptForSessionSelection(
+        CodingSessionModel sessionEntrySelection = _inputHandler.PromptForSessionListSelection(
             sessionLogs, "[yellow]Which log entry would you like to delete?[/]");
         
         if (AnsiConsole.Confirm($"Are you sure you want to delete this log entry (ID: {sessionEntrySelection.Id})?"))
         {
-            bool result = _sessionService.DeleteSessionRecord(sessionEntrySelection.Id!.Value);
+            bool result = _codingSessionDAO.DeleteSessionRecord(sessionEntrySelection.Id!.Value);
             if (result)
                 _appUtil.AnsiWriteLine(new Markup("[green]Log entry successfully deleted![/]"));
             else
@@ -140,21 +183,21 @@ public class AppSessionManager
             _appUtil.AnsiWriteLine(new Markup("[yellow]Operation cancelled.[/]"));
         }
 
-        _userInput.PauseForContinueInput();
+        _inputHandler.PauseForContinueInput();
     }
 
     private void DeleteAllSession()
     {
-        if (_sessionService.DeleteAllSessions())
+        if (_codingSessionDAO.DeleteAllSessions())
         {
             AnsiConsole.Markup("[green]All sessions have been successfully deleted![/]");
             _appUtil.PrintNewLines(1);
-            _userInput.PauseForContinueInput();
+            _inputHandler.PauseForContinueInput();
         }
         else
         {
             AnsiConsole.Markup("[red]\"No sessions were deleted. (The table might have been empty).[/]");
-            _userInput.PauseForContinueInput();
+            _inputHandler.PauseForContinueInput();
         }
     }
 }
