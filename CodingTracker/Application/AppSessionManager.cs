@@ -8,18 +8,16 @@ namespace CodingTracker.Application;
 public class AppSessionManager
 {
     private readonly CodingSessionDAO _codingSessionDAO;
-    private Utilities _utilities;
     private InputHandler _inputHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppSessionManager"/> class.
     /// </summary>
     /// <param name="sessionService">The service for managing habit data.</param>
-    public AppSessionManager(CodingSessionDAO codingSessionDAO)
+    public AppSessionManager(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
     {
         _codingSessionDAO = codingSessionDAO;
-        _utilities = new Utilities();
-        _inputHandler = new InputHandler();
+        _inputHandler = inputHandler;
     }
 
     /// <summary>
@@ -30,13 +28,13 @@ public class AppSessionManager
         while (true)
         {
             AnsiConsole.Clear();
-            _utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            Utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Manage Coding Session Records")
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(ManageSessionsMenuOptions))
-                .Select(_utilities.SplitCamelCase)));
+                .Select(Utilities.SplitCamelCase)));
 
             switch (Enum.Parse<ManageSessionsMenuOptions>(option.Replace(" ", "")))
             {
@@ -74,8 +72,8 @@ public class AppSessionManager
 
         if (sessions.Count == 0)
         {
-            _utilities.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
-            _utilities.PrintNewLines(2);
+            Utilities.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
             return;
         }
@@ -112,7 +110,7 @@ public class AppSessionManager
         }
 
         AnsiConsole.Write(table);
-        _utilities.PrintNewLines(2);
+        Utilities.PrintNewLines(2);
         _inputHandler.PauseForContinueInput();
     }
 
@@ -124,8 +122,8 @@ public class AppSessionManager
         List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
         if (!sessionLogs.Any())
         {
-            _utilities.AnsiWriteLine(new Markup("[red]No log entries available to edit.[/]"));
-            _utilities.PrintNewLines(2);
+            Utilities.AnsiWriteLine(new Markup("[red]No log entries available to edit.[/]"));
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
             return;
         }
@@ -139,7 +137,7 @@ public class AppSessionManager
         if (!propertiesToEdit.Any()) 
         {
             AnsiConsole.Markup("[yellow]Update cancelled![/]");
-            _utilities.PrintNewLines(2);
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
             return;
         }
@@ -173,7 +171,7 @@ public class AppSessionManager
         if (_codingSessionDAO.UpdateSession(sessionEntrySelection))
         {
             AnsiConsole.Markup("[green]Coding session successfully updated![/]");
-            _utilities.PrintNewLines(2);
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
         }
         else
@@ -191,7 +189,7 @@ public class AppSessionManager
         List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
         if (!sessionLogs.Any())
         {
-            _utilities.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
+            Utilities.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
             _inputHandler.PauseForContinueInput();
             return;
         }
@@ -203,19 +201,19 @@ public class AppSessionManager
         {
             if (_codingSessionDAO.DeleteSessionRecord(sessionEntrySelection.Id!.Value))
             {
-                _utilities.AnsiWriteLine(new Markup("[green]Log entry successfully deleted![/]"));
-                _utilities.PrintNewLines(2);
+                Utilities.AnsiWriteLine(new Markup("[green]Log entry successfully deleted![/]"));
+                Utilities.PrintNewLines(2);
             }
             else
             {
-                _utilities.AnsiWriteLine(new Markup("[red]Failed to delete log entry. It may no longer exist or the database could be locked.[/]"));
-                _utilities.PrintNewLines(2);
+                Utilities.AnsiWriteLine(new Markup("[red]Failed to delete log entry. It may no longer exist or the database could be locked.[/]"));
+                Utilities.PrintNewLines(2);
             }
         }
         else
         {
-            _utilities.AnsiWriteLine(new Markup("[yellow]Operation cancelled.[/]"));
-            _utilities.PrintNewLines(2);
+            Utilities.AnsiWriteLine(new Markup("[yellow]Operation cancelled.[/]"));
+            Utilities.PrintNewLines(2);
         }
 
         _inputHandler.PauseForContinueInput();
@@ -229,13 +227,13 @@ public class AppSessionManager
         if (_codingSessionDAO.DeleteAllSessions())
         {
             AnsiConsole.Markup("[green]All sessions have been successfully deleted![/]");
-            _utilities.PrintNewLines(2);
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
         }
         else
         {
             AnsiConsole.Markup("[red]\"No sessions were deleted. (The table might have been empty).[/]");
-            _utilities.PrintNewLines(2);
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
         }
     }

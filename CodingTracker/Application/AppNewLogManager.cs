@@ -8,18 +8,16 @@ namespace CodingTracker.Application;
 public class AppNewLogManager
 {
     private readonly CodingSessionDAO _codingSessionDAO;
-    private Utilities _appUtil;
     private InputHandler _inputHandler;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppNewLogManager"/> class.
     /// </summary>
     /// <param name="sessionService">The service for managing Coding Session log data.</param>
-    public AppNewLogManager(CodingSessionDAO codingSessionDAO)
+    public AppNewLogManager(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
     {
         _codingSessionDAO = codingSessionDAO;
-        _appUtil = new Utilities();
-        _inputHandler = new InputHandler();
+        _inputHandler = inputHandler;
     }
 
     /// <summary>
@@ -30,13 +28,13 @@ public class AppNewLogManager
         while (true)
         {
             AnsiConsole.Clear();
-            _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            Utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Add New Session Log Records")
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions))
-                .Select(_appUtil.SplitCamelCase)));
+                .Select(Utilities.SplitCamelCase)));
 
             switch (Enum.Parse<LogManualSessionMenuOptions>(option.Replace(" ", "")))
             {
@@ -70,7 +68,7 @@ public class AppNewLogManager
         {
             string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
             AnsiConsole.Write(new Markup(successMessage));
-            _appUtil.PrintNewLines(1);
+            Utilities.PrintNewLines(1);
         }
         else
         {
@@ -106,7 +104,7 @@ public class AppNewLogManager
         {
             string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
             AnsiConsole.Write(new Markup(successMessage));
-            _appUtil.PrintNewLines(1);
+            Utilities.PrintNewLines(1);
         }
         else
         {

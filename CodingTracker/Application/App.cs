@@ -5,9 +5,6 @@ using Spectre.Console;
 
 namespace CodingTracker.Application;
 
-// TODO: Instantiae one input handler in main app and pass to child apps;
-// TODO: Remove input handler instantiation from child apps and reference inputHandler parameter
-
 /// <summary>
 /// App manages the main application loop and user interactions for the Coding Tracker console application.
 /// It orchestrates the flow of the application based on user input and coordinates between different parts of the application.
@@ -22,7 +19,6 @@ public class App
     private DatabaseContext _dbContext;
     private DatabaseSeeder _dbSeeder;
     private CodingSessionDAO _codingSessionDAO;
-    private Utilities _utilities;
     private InputHandler _inputHandler;
 
 
@@ -40,13 +36,13 @@ public class App
         dbInitializer.Initialize();
 
         // Initialize services
-        _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO);
-        _newLogManager = new AppNewLogManager(_codingSessionDAO);
-        _sessionManager = new AppSessionManager(_codingSessionDAO);
+        _inputHandler = new InputHandler();
+        _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO, _inputHandler);
+        _newLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
+        _sessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
         _goalManager = new AppGoalManager();  
         _reportManager = new AppReportManager();
-        _utilities = new Utilities();
-        _inputHandler = new InputHandler();
+        
     }
 
     /// <summary>
@@ -59,12 +55,12 @@ public class App
         while (running)
         {
             AnsiConsole.Clear();
-            _utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            Utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(MainMenuOption))
-                .Select(_utilities.SplitCamelCase)));
+                .Select(Utilities.SplitCamelCase)));
 
             switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
             {
@@ -89,7 +85,7 @@ public class App
                 case MainMenuOption.Exit:
                     running = false;
                     AnsiConsole.Markup("[grey]Goodbye![/]");
-                    _utilities.PrintNewLines(2);
+                    Utilities.PrintNewLines(2);
                     break;
                 default:
                     AnsiConsole.Markup("[red]Invalid option selected.[/]");

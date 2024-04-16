@@ -9,7 +9,6 @@ namespace CodingTracker.Application;
 public class AppStopwatchManager
 {
     private readonly CodingSessionDAO _codingSessionDAO;
-    private Utilities _utilities;
     private InputHandler _inputHandler;
     private CodingSessionModel? _sessionModel;
     private bool _stopwatchRunning;
@@ -24,11 +23,10 @@ public class AppStopwatchManager
     /// The method continuously displays a menu that adapts based on whether a session is currently active. If a session is active,
     /// options are provided for viewing the elapsed time and ending the session. If no session is active, options are provided to start a new session or exit.
     /// </remarks>
-    public AppStopwatchManager(CodingSessionDAO codingSessionDAO)
+    public AppStopwatchManager(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
     {
         _codingSessionDAO = codingSessionDAO;
-        _utilities = new Utilities();
-        _inputHandler = new InputHandler();
+        _inputHandler = inputHandler;
         _stopwatchRunning = false;
     }
 
@@ -66,7 +64,7 @@ public class AppStopwatchManager
                 panel.Expand = true;
                 AnsiConsole.Write(panel);
 
-                _utilities.PrintNewLines(3);
+                Utilities.PrintNewLines(3);
 
                 // Options available during an active session
                 options.Add(StartSessionMenuOptions.RefreshElapsedTime);
@@ -79,13 +77,13 @@ public class AppStopwatchManager
                 options.Add(StartSessionMenuOptions.ReturnToMainMenu);
             }
 
-            _utilities.AnsiWriteLine(new Markup("[underline green]Select an option:[/]\n"));
+            Utilities.AnsiWriteLine(new Markup("[underline green]Select an option:[/]\n"));
             StartSessionMenuOptions selectedOption = AnsiConsole.Prompt(
                 new SelectionPrompt<StartSessionMenuOptions>()
                     .Title("Start and Stop New Coding Session")
                     .PageSize(10)
                     .AddChoices(options)
-                    .UseConverter(selectedOption => _utilities.SplitCamelCase(selectedOption.ToString())));  // Using SplitCamelCase to format enum values
+                    .UseConverter(selectedOption => Utilities.SplitCamelCase(selectedOption.ToString())));  // Using SplitCamelCase to format enum values
 
             switch (selectedOption)
             {
@@ -121,7 +119,7 @@ public class AppStopwatchManager
 
         AnsiConsole.MarkupLine("[green]Session started. Stopwatch is now running.[/]");
 
-        _utilities.PrintNewLines(2);
+        Utilities.PrintNewLines(2);
         _inputHandler.PauseForContinueInput();
     }
 
@@ -139,7 +137,7 @@ public class AppStopwatchManager
         if (!_stopwatchRunning)
         {
             AnsiConsole.MarkupLine("[red]No active session to update.[/]");
-            _utilities.PrintNewLines(2);
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
             return;
         }
@@ -159,7 +157,7 @@ public class AppStopwatchManager
         if (!_stopwatchRunning)
         {
             AnsiConsole.MarkupLine("[red]No active session to end.[/]");
-            _utilities.PrintNewLines(2);
+            Utilities.PrintNewLines(2);
             _inputHandler.PauseForContinueInput();
             return;
         }
@@ -178,7 +176,7 @@ public class AppStopwatchManager
 
         AnsiConsole.MarkupLine("[green]Session ended and logged successfully.[/]");
 
-        _utilities.PrintNewLines(2);
+        Utilities.PrintNewLines(2);
         _inputHandler.PauseForContinueInput();
     }
 }
