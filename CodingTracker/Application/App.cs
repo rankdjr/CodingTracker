@@ -21,7 +21,6 @@ public class App
     private CodingSessionDAO _codingSessionDAO;
     private InputHandler _inputHandler;
 
-
     /// <summary>
     /// Initializes a new instance of App with the necessary services to manage coding sessions, goals, and reports.
     /// </summary>
@@ -30,19 +29,20 @@ public class App
     {
         // Setup database
         _dbContext = new DatabaseContext();
-        _codingSessionDAO = new CodingSessionDAO(_dbContext);
         DatabaseInitializer dbInitializer = new DatabaseInitializer(_dbContext);
         dbInitializer.Initialize();
 
         // Initialize services
         _inputHandler = new InputHandler();
+        _codingSessionDAO = new CodingSessionDAO(_dbContext);
         _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _inputHandler);
+
+        // Setup child applications
         _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO, _inputHandler);
         _newLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
         _sessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
         _goalManager = new AppGoalManager();  
         _reportManager = new AppReportManager();
-        
     }
 
     /// <summary>
