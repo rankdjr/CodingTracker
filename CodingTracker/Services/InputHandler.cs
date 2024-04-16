@@ -6,6 +6,7 @@ namespace CodingTracker.Services;
 
 public class InputHandler
 {
+    
     /// <summary>
     /// Prompts the user for a date input with custom messaging and validates the input.
     /// The input must be a valid date in the format "yyyy-MM-dd" and cannot be a future date.

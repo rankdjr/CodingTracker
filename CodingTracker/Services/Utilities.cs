@@ -11,13 +11,6 @@ namespace CodingTracker.Services;
 /// </summary>
 public class Utilities
 {
-    private InputHandler _inputHandler;
-
-    public Utilities()
-    {
-        _inputHandler = new InputHandler();
-    }
-
     /// <summary>
     /// Writes a markup message to the console with a newline.
     /// </summary>
