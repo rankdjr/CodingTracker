@@ -2,7 +2,6 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
-using System.Runtime.Intrinsics.X86;
 
 namespace CodingTracker.Application;
 
