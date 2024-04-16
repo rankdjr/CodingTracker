@@ -50,11 +50,12 @@ public class App
         while (running)
         {
             AnsiConsole.Clear();
-            AppUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .PageSize(10)
-                .AddChoices(Enum.GetNames(typeof(MainMenuOption)).Select(AppUtil.SplitCamelCase)));
+                .AddChoices(Enum.GetNames(typeof(MainMenuOption))
+                .Select(_appUtil.SplitCamelCase)));
 
             switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
             {

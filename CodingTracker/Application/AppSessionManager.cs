@@ -10,6 +10,7 @@ public class AppSessionManager
 {
     private readonly SessionService _sessionService;
     private AppUtil _appUtil;
+    private UserInput _userInput;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AppSessionManager"/> class.
@@ -19,6 +20,7 @@ public class AppSessionManager
     {
         _sessionService = sessionService;
         _appUtil = new AppUtil();
+        _userInput = new UserInput();
     }
 
     /// <summary>
@@ -29,12 +31,13 @@ public class AppSessionManager
         while (true)
         {
             AnsiConsole.Clear();
-            AppUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
+            _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("Manage Coding Session Records")
                 .PageSize(10)
-                .AddChoices(Enum.GetNames(typeof(ManageSessionsMenuOptions)).Select(AppUtil.SplitCamelCase)));
+                .AddChoices(Enum.GetNames(typeof(ManageSessionsMenuOptions))
+                .Select(_appUtil.SplitCamelCase)));
 
             switch (Enum.Parse<ManageSessionsMenuOptions>(option.Replace(" ", "")))
             {
@@ -63,8 +66,8 @@ public class AppSessionManager
 
         if (sessions.Count == 0)
         {
-            AppUtil.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
-            _appUtil.PauseForContinueInput();
+            _appUtil.AnsiWriteLine(new Markup("[yellow]No sessions found![/]"));
+            _userInput.PauseForContinueInput();
             return;
         }
 
@@ -95,7 +98,7 @@ public class AppSessionManager
         }
 
         AnsiConsole.Write(table);
-        _appUtil.PauseForContinueInput();
+        _userInput.PauseForContinueInput();
     }
 
     private void EditSession()
@@ -113,42 +116,31 @@ public class AppSessionManager
 
     private void DeleteSession()
     {
-        var entries = _sessionService.GetAllSessionRecords();
-        if (!entries.Any())
+        List<CodingSessionModel> sessionLogs = _sessionService.GetAllSessionRecords();
+        if (!sessionLogs.Any())
         {
-            AppUtil.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
-            _appUtil.PauseForContinueInput();
+            _appUtil.AnsiWriteLine(new Markup("[red]No log entries available to delete.[/]"));
+            _userInput.PauseForContinueInput();
             return;
         }
 
-        CodingSessionModel sessionEntrySelection = AnsiConsole.Prompt(
-            new SelectionPrompt<CodingSessionModel>()
-                .Title("[yellow]Which log entry would you like to delete?[/]")
-                .PageSize(10)
-                .MoreChoicesText("[grey](Move up and down to see more log entries)[/]")
-                .UseConverter(entry =>
-                    $"[bold yellow]ID:[/] {entry.Id}, " +
-                    $"[bold cyan]Session Date:[/] {entry.SessionDate}, " +
-                    (entry.StartTime != null ? $"[bold green]Start Time:[/] {entry.StartTime}, " : "") +
-                    (entry.EndTime != null ? $"[bold magenta]End Time:[/] {entry.EndTime}, " : "") +
-                    $"[bold blue]Duration:[/] {entry.Duration}")
-                .AddChoices(entries));
-
-
+        CodingSessionModel sessionEntrySelection = _userInput.PromptForSessionSelection(
+            sessionLogs, "[yellow]Which log entry would you like to delete?[/]");
+        
         if (AnsiConsole.Confirm($"Are you sure you want to delete this log entry (ID: {sessionEntrySelection.Id})?"))
         {
             bool result = _sessionService.DeleteSessionRecord(sessionEntrySelection.Id!.Value);
             if (result)
-                AppUtil.AnsiWriteLine(new Markup("[green]Log entry successfully deleted![/]"));
+                _appUtil.AnsiWriteLine(new Markup("[green]Log entry successfully deleted![/]"));
             else
-                AppUtil.AnsiWriteLine(new Markup("[red]Failed to delete log entry. It may no longer exist or the database could be locked.[/]"));
+                _appUtil.AnsiWriteLine(new Markup("[red]Failed to delete log entry. It may no longer exist or the database could be locked.[/]"));
         }
         else
         {
-            AppUtil.AnsiWriteLine(new Markup("[yellow]Operation cancelled.[/]"));
+            _appUtil.AnsiWriteLine(new Markup("[yellow]Operation cancelled.[/]"));
         }
 
-        _appUtil.PauseForContinueInput();
+        _userInput.PauseForContinueInput();
     }
 
     private void DeleteAllSession()
@@ -157,12 +149,12 @@ public class AppSessionManager
         {
             AnsiConsole.Markup("[green]All sessions have been successfully deleted![/]");
             _appUtil.PrintNewLines(1);
-            _appUtil.PauseForContinueInput();
+            _userInput.PauseForContinueInput();
         }
         else
         {
             AnsiConsole.Markup("[red]\"No sessions were deleted. (The table might have been empty).[/]");
-            _appUtil.PauseForContinueInput();
+            _userInput.PauseForContinueInput();
         }
     }
 }
