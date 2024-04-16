@@ -1,4 +1,6 @@
-﻿namespace CodingTracker.Database;
+﻿using System.Data.SQLite;
+
+namespace CodingTracker.Database;
 
 /// <summary>
 /// DatabaseInitializer is responsible for setting up the initial structure of the database.
@@ -45,7 +47,8 @@ public class DatabaseInitializer
                 {
                     try
                     {
-                        DbHelper.ExecuteCommand(CreateSessionTable, connection, transaction: transaction);
+                        var command = new SQLiteCommand(CreateSessionTable, connection, transaction);
+                        command.ExecuteNonQuery();
                         transaction.Commit();
                     }
                     catch

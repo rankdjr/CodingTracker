@@ -30,13 +30,13 @@ public class App
     {
         // Setup database
         _dbContext = new DatabaseContext();
-        _dbSeeder = new DatabaseSeeder();
         _codingSessionDAO = new CodingSessionDAO(_dbContext);
         DatabaseInitializer dbInitializer = new DatabaseInitializer(_dbContext);
         dbInitializer.Initialize();
 
         // Initialize services
         _inputHandler = new InputHandler();
+        _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _inputHandler);
         _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO, _inputHandler);
         _newLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
         _sessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
@@ -80,7 +80,7 @@ public class App
                     _reportManager.Run();
                     break;
                 case MainMenuOption.SeedDatabase:
-                    _dbSeeder.SeedDatabase(_codingSessionDAO);
+                    _dbSeeder.SeedDatabase();
                     break;
                 case MainMenuOption.Exit:
                     running = false;

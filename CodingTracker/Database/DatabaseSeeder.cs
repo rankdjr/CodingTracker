@@ -13,21 +13,22 @@ public class DatabaseSeeder
 {
     private static Random _random = new Random();
     private InputHandler _inputHandler;
+    private CodingSessionDAO _codingSessionDAO;
 
-    public DatabaseSeeder()
+    public DatabaseSeeder(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
     {
         // Using the current time to generate a seed
         int seed = (int)DateTime.Now.Ticks;
         _random = new Random(seed);
-        _inputHandler = new InputHandler();
+        _inputHandler = inputHandler;
+        _codingSessionDAO = codingSessionDAO;
     }
 
     /// <summary>
     /// Seeds the database with log entries for existing habits, creating multiple logs per habit.
     /// </summary>
-    /// <param name="sessionService">Service used to interact with the session logs table.</param>
     /// <param name="numOfSessions">Number of session log entries to create.</param>
-    public void SeedSessions(CodingSessionDAO sessionService, int numOfSessions)
+    public void SeedSessions(int numOfSessions)
     {
         for (int i = 0; i < numOfSessions / 2; i++)
         {
@@ -37,7 +38,7 @@ public class DatabaseSeeder
             DateTime sessionDate = DateTime.Today.AddDays(-_random.Next(1, 30));
 
             CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
-            sessionService.InsertNewSession(newSession);
+            _codingSessionDAO.InsertNewSession(newSession);
         }
 
         for (int i = 0; i < numOfSessions / 2; i++)
@@ -46,7 +47,7 @@ public class DatabaseSeeder
             DateTime startTime = endTime.AddMinutes(-_random.Next(1, 180));
 
             CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
-            sessionService.InsertNewSession(newSession);
+            _codingSessionDAO.InsertNewSession(newSession);
         }
     }
 
@@ -54,7 +55,7 @@ public class DatabaseSeeder
     /// Seeds the application's database with initial data for habits and log entries.
     /// This method is used prepopulate the database with test data.
     /// </summary>
-    public void SeedDatabase(CodingSessionDAO sessionService)
+    public void SeedDatabase()
     {
         AnsiConsole.WriteLine("Starting database seeding...");
 
@@ -65,7 +66,7 @@ public class DatabaseSeeder
                 .Start("Processing...", ctx =>
                 {
                     // Call to seed sessions
-                    SeedSessions(sessionService, ConfigSettings.NumberOfCodingSessionsToSeed);
+                    SeedSessions(ConfigSettings.NumberOfCodingSessionsToSeed);
                 });
 
             AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
