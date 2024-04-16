@@ -35,7 +35,8 @@ public class AppNewLogManager
             new SelectionPrompt<string>()
                 .Title("Add New Session Log Records")
                 .PageSize(10)
-                .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions)).Select(_appUtil.SplitCamelCase)));
+                .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions))
+                .Select(_appUtil.SplitCamelCase)));
 
             switch (Enum.Parse<LogManualSessionMenuOptions>(option.Replace(" ", "")))
             {

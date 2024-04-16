@@ -2,6 +2,7 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
+using System.Reflection.PortableExecutable;
 
 namespace CodingTracker.Application;
 
@@ -10,108 +11,171 @@ public class AppStopwatchManager
     private readonly CodingSessionDAO _codingSessionDAO;
     private Utilities _appUtil;
     private InputHandler _inputHandler;
+    private CodingSessionModel _sessionModel;
+    private bool _stopwatchRunning;
+    private DateTime _startTime;
+    
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppStopwatchManager"/> class.
+    /// /// <summary>
+    /// Runs the main application loop, providing a user interface for managing coding sessions.
     /// </summary>
     /// <param name="codingSessionDAO">The service for tracking current Coding Sessions.</param>
+    /// <remarks>
+    /// The method continuously displays a menu that adapts based on whether a session is currently active. If a session is active,
+    /// options are provided for viewing the elapsed time and ending the session. If no session is active, options are provided to start a new session or exit.
+    /// </remarks>
     public AppStopwatchManager(CodingSessionDAO codingSessionDAO)
     {
         _codingSessionDAO = codingSessionDAO;
         _appUtil = new Utilities();
         _inputHandler = new InputHandler();
+        _stopwatchRunning = false;
     }
 
     /// <summary>
-    /// Starts the Stopwatch Manager menu loop.
+    /// Runs the main application loop, providing a user interface for managing coding sessions.
     /// </summary>
+    /// <remarks>
+    /// The method continuously displays a dynamic menu that adapts based on whether a session is currently active.
+    /// When a session is active, it shows session statistics and provides options to refresh elapsed time or end the session.
+    /// When no session is active, it provides options to start a new session or return to the main menu.
+    /// </remarks>
     public void Run()
     {
         while (true)
         {
             AnsiConsole.Clear();
-            _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
-            var option = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title("Start and Stop New Coding Session")
-                .PageSize(10)
-                .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions)).Select(_appUtil.SplitCamelCase)));
+            List<StartSessionMenuOptions> options = new List<StartSessionMenuOptions>();
 
-            switch (Enum.Parse<StartSessionMenuOptions>(option.Replace(" ", "")))
+            if (_stopwatchRunning)
             {
-                case StartSessionMenuOptions.LogSessionByDateAndDuration:
-                    LogSessionByDateAndDuration();
+                // Display current session info
+                TimeSpan elapsedTime = DateTime.Now - _startTime;
+                string panelSessionTitle = $"\n[bold]Current Session:[/] \n\n";
+                string panelStartTime = $"[underline]Start Time:[/] [royalblue1]{_startTime.ToString(ConfigSettings.DateFormatLong)}[/]\n";
+                string panelElapsedTime = $"[underline]Elapsed Time:[/] [steelblue1]{elapsedTime.ToString(@"hh\:mm\:ss")}[/]\n\n";
+
+                string panelInformation = panelSessionTitle + panelStartTime + panelElapsedTime;
+                var panel = new Panel(new Markup(panelInformation));
+                panel.Header = new PanelHeader("[mediumspringgreen]Session Running[/]", Justify.Center);
+                panel.Padding = new Padding(2, 2, 2, 2);
+                panel.Border = BoxBorder.Rounded;
+                panel.Expand = true;
+                AnsiConsole.Write(panel);
+
+                _appUtil.PrintNewLines(3);
+
+                // Options available during an active session
+                options.Add(StartSessionMenuOptions.RefreshElapsedTime);
+                options.Add(StartSessionMenuOptions.EndCurrentSession);
+            }
+            else
+            {
+                // Options available when no session is active
+                options.Add(StartSessionMenuOptions.StartSession);
+                options.Add(StartSessionMenuOptions.ReturnToMainMenu);
+            }
+
+            _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option:[/]\n"));
+            StartSessionMenuOptions selectedOption = AnsiConsole.Prompt(
+                new SelectionPrompt<StartSessionMenuOptions>()
+                    .Title("Start and Stop New Coding Session")
+                    .PageSize(10)
+                    .AddChoices(options)
+                    .UseConverter(selectedOption => _appUtil.SplitCamelCase(selectedOption.ToString())));  // Using SplitCamelCase to format enum values
+
+            switch (selectedOption)
+            {
+                case StartSessionMenuOptions.StartSession:
+                    StartSession();
                     break;
-                case StartSessionMenuOptions.LogSessionByStartEndTimes:
-                    LogSessionByStartEndTimes();
+                case StartSessionMenuOptions.RefreshElapsedTime:
+                    UpdateStopwatchPanel();
                     break;
-                case LogManualSessionMenuOptions.ReturnToMainMenu:
-                    return;
+                case StartSessionMenuOptions.EndCurrentSession:
+                    EndSession();
+                    break;
+                case StartSessionMenuOptions.ReturnToMainMenu:
+                    return;  
             }
         }
     }
 
     /// <summary>
-    /// Prompts the user for a session date and duration, then logs the session accordingly.
+    /// Starts a new coding session and initializes the stopwatch.
     /// </summary>
-    private void LogSessionByDateAndDuration()
+    /// <remarks>
+    /// This method marks the current time as the start of a new session, displays a confirmation message,
+    /// and sets the session running flag to true. It also handles the initialization of a new session model.
+    /// </remarks>
+    private void StartSession()
     {
         AnsiConsole.Clear();
 
-        DateTime sessionDate = _inputHandler.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
-        TimeSpan duration = _inputHandler.PromptForTimeSpan($"Enter the duration of the session. Please use the format [[ {ConfigSettings.TimeFormatString} ]]:");
+        _startTime = DateTime.Now;
+        _sessionModel = new CodingSessionModel(_startTime, _startTime);
+        _stopwatchRunning = true;
 
-        // Create new coding session object via constructor (duration manually entered here)
-        CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
+        AnsiConsole.MarkupLine("[green]Session started. Stopwatch is now running.[/]");
 
-        int newRecordID = _codingSessionDAO.InsertNewSession(newSession);
-        if (newRecordID != -1)
-        {
-            string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
-            AnsiConsole.Write(new Markup(successMessage));
-            _appUtil.PrintNewLines(1);
-        }
-        else
-        {
-            AnsiConsole.Markup("[red]Failed to log the session. Please try again or check the system logs.[/]");
-        }
-
+        _appUtil.PrintNewLines(2);
         _inputHandler.PauseForContinueInput();
     }
 
     /// <summary>
-    /// Prompts the user for a start and end time, validates the entries, and logs the session if the end time is after the start time.
+    /// Updates and displays the elapsed time for the current active session.
     /// </summary>
-    private void LogSessionByStartEndTimes()
+    /// <remarks>
+    /// This method checks if a session is active and then calculates and displays the elapsed time since the session started.
+    /// If no session is active, it displays an error message.
+    /// </remarks>
+    private void UpdateStopwatchPanel()
     {
         AnsiConsole.Clear();
 
-        DateTime startTime = _inputHandler.PromptForDate($"Enter the Start Time for the log entry {ConfigSettings.DateFormatLong}:", DatePrompt.Long);
-        DateTime endTime;
-
-        do
+        if (!_stopwatchRunning)
         {
-            endTime = _inputHandler.PromptForDate($"Enter the End Time for the session {ConfigSettings.DateFormatLong}:", DatePrompt.Long);
-            if (endTime <= startTime)
-            {
-                AnsiConsole.Markup("[red]End time must be after start time. Please enter a valid end time.[/]\n");
-            }
-        } while (endTime <= startTime);
-
-        // Create new coding session object via constructor (duration automatically calculated)
-        CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
-        int newRecordID = _codingSessionDAO.InsertNewSession(newSession);
-        if (newRecordID != -1)
-        {
-            string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
-            AnsiConsole.Write(new Markup(successMessage));
-            _appUtil.PrintNewLines(1);
+            AnsiConsole.MarkupLine("[red]No active session to update.[/]");
+            _appUtil.PrintNewLines(2);
+            _inputHandler.PauseForContinueInput();
+            return;
         }
-        else
+    }
+
+    /// <summary>
+    /// Ends the current active session, logs the session details, and stops the stopwatch.
+    /// </summary>
+    /// <remarks>
+    /// The method confirms with the user before ending the session. If confirmed, it calculates the total duration, updates the session model,
+    /// logs the session via the DAO, and then resets the session tracking state. A success message is displayed upon completion.
+    /// </remarks>
+    private void EndSession()
+    {
+        AnsiConsole.Clear();
+
+        if (!_stopwatchRunning)
         {
-            AnsiConsole.Markup("[red]Failed to log the session. Please try again or check the system logs.[/]");
+            AnsiConsole.MarkupLine("[red]No active session to end.[/]");
+            _appUtil.PrintNewLines(2);
+            _inputHandler.PauseForContinueInput();
+            return;
         }
 
+        // Confirm ending the session
+        if (!AnsiConsole.Confirm("Are you sure you want to end the current session?"))
+        {
+            return;
+        }
+
+        DateTime endTime = DateTime.Now;
+        _sessionModel.SetEndTime(endTime);
+        _sessionModel.SetDuration(_startTime, endTime);
+        _codingSessionDAO.InsertNewSession(_sessionModel);
+        _stopwatchRunning = false;
+
+        AnsiConsole.MarkupLine("[green]Session ended and logged successfully.[/]");
+
+        _appUtil.PrintNewLines(2);
         _inputHandler.PauseForContinueInput();
     }
 }

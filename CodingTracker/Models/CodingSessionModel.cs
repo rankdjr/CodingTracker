@@ -66,6 +66,17 @@ public class CodingSessionModel
     }
 
     /// <summary>
+    /// Updates the duration of the coding session.
+    /// </summary>
+    /// <param name="newDuration">New duration in hours.</param>
+    public void SetDuration(DateTime startTime, DateTime endTime)
+    {
+        TimeSpan elapsedTime = endTime - startTime;
+        Duration = elapsedTime.ToString(ConfigSettings.TimeFormatType);
+        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+    }
+
+    /// <summary>
     /// Sets the session date property to a formatted string based on the provided DateTime value.
     /// Also updates the 'DateUpdated' property to the current UTC date and time.
     /// </summary>

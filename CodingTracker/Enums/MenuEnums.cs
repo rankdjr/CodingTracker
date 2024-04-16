@@ -11,8 +11,10 @@
 
 public enum StartSessionMenuOptions
 {
-    ViewElapsedTime,
-    EndCurrentSession
+    StartSession,
+    RefreshElapsedTime,
+    EndCurrentSession,
+    ReturnToMainMenu
 }
 
 public enum LogManualSessionMenuOptions
