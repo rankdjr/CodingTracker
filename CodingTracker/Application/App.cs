@@ -5,6 +5,9 @@ using Spectre.Console;
 
 namespace CodingTracker.Application;
 
+// TODO: Instantiae one input handler in main app and pass to child apps;
+// TODO: Remove input handler instantiation from child apps and reference inputHandler parameter
+
 /// <summary>
 /// App manages the main application loop and user interactions for the Coding Tracker console application.
 /// It orchestrates the flow of the application based on user input and coordinates between different parts of the application.
@@ -20,6 +23,7 @@ public class App
     private DatabaseSeeder _dbSeeder;
     private CodingSessionDAO _codingSessionDAO;
     private Utilities _utilities;
+    private InputHandler _inputHandler;
 
 
     /// <summary>
@@ -42,6 +46,7 @@ public class App
         _goalManager = new AppGoalManager();  
         _reportManager = new AppReportManager();
         _utilities = new Utilities();
+        _inputHandler = new InputHandler();
     }
 
     /// <summary>

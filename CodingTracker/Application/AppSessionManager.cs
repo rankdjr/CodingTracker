@@ -80,17 +80,10 @@ public class AppSessionManager
             return;
         }
 
-        List<QueryOptions> queryOptions = _inputHandler.PromptForQueryFilterOptions();
+        // TODO: Build query option selections
+        // TODO: prompt for time period selections 
+        // TODO: multiselect prompt for columns and ASC or DESC
 
-        if (queryOptions.Contains(QueryOptions.FilterByTimePeriod))
-        {
-           // TODO: prompt for time period selections 
-        }
-
-        if (queryOptions.Contains(QueryOptions.OrderBy))
-        {
-           // TODO: multiselect prompt for columns and ASC or DESC
-        }
 
         var table = new Table();
         table.Border(TableBorder.Rounded);
