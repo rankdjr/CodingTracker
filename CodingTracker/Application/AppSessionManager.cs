@@ -59,6 +59,15 @@ public class AppSessionManager
 
 
     }
+
+    /// <summary>
+    /// Displays all coding session records in a table format.
+    /// </summary>
+    /// <remarks>
+    /// Retrieves all session records from the database and displays them. If no sessions are found, it displays 
+    /// a message indicating that no sessions are available. This method allows the user to view details about 
+    /// each session, such as ID, dates, times, and durations.
+    /// </remarks>
     private void ViewSessions()
     {
         var sessions = _codingSessionDAO.GetAllSessionRecords();
@@ -102,6 +111,9 @@ public class AppSessionManager
         _inputHandler.PauseForContinueInput();
     }
 
+    /// <summary>
+    /// Allows the user to select and edit properties of a coding session.
+    /// </summary>
     private void EditSession()
     {
         List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
@@ -166,6 +178,9 @@ public class AppSessionManager
         }
     }
 
+    /// <summary>
+    /// Allows the user to select and delete a specific coding session from the database.
+    /// </summary>
     private void DeleteSession()
     {
         List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
@@ -201,6 +216,9 @@ public class AppSessionManager
         _inputHandler.PauseForContinueInput();
     }
 
+    /// <summary>
+    /// Deletes all coding session records from the database.
+    /// </summary>
     private void DeleteAllSession()
     {
         if (_codingSessionDAO.DeleteAllSessions())
