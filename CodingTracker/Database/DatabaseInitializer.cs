@@ -32,6 +32,7 @@ public class DatabaseInitializer
     /// <summary>
     /// Executes the SQL commands to create the initial database schema including tables and views.
     /// Uses transactions to ensure that all operations are completed atomically.
+    /// 
     /// Handles any exceptions during initialization and logs them appropriately.
     /// </summary>
     public void Initialize()

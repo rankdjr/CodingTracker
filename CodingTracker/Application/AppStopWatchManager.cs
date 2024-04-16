@@ -50,12 +50,15 @@ public class AppStopwatchManager
             if (_stopwatchRunning)
             {
                 // Display current session info
-                TimeSpan elapsedTime = DateTime.Now - _startTime;
+                DateTime currentTime = DateTime.Now;
+                TimeSpan elapsedTime = currentTime - _startTime;
+                
                 string panelSessionTitle = $"\n[bold]Current Session:[/] \n\n";
-                string panelStartTime = $"[underline]Start Time:[/] [royalblue1]{_startTime.ToString(ConfigSettings.DateFormatLong)}[/]\n";
-                string panelElapsedTime = $"[underline]Elapsed Time:[/] [steelblue1]{elapsedTime.ToString(@"hh\:mm\:ss")}[/]\n\n";
+                string panelStartTime = $"[underline]Start Time[/]:       [royalblue1]{_startTime.ToString(ConfigSettings.DateFormatLong)}[/]\n";
+                string panelElapsedTime = $"[underline]Elapsed Time[/]:     [steelblue1]{elapsedTime.ToString(@"hh\:mm\:ss")}[/]\n\n";
+                string panelLastUpdated = $"Last Updated at [darkgoldenrod]  {currentTime.ToString(ConfigSettings.DateFormatLong)}[/]";
 
-                string panelInformation = panelSessionTitle + panelStartTime + panelElapsedTime;
+                string panelInformation = panelSessionTitle + panelStartTime + panelElapsedTime + panelLastUpdated;
                 var panel = new Panel(new Markup(panelInformation));
                 panel.Header = new PanelHeader("[mediumspringgreen]Session Running[/]", Justify.Center);
                 panel.Padding = new Padding(2, 2, 2, 2);
