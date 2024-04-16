@@ -84,12 +84,12 @@ public class AppSessionManager
 
         if (queryOptions.Contains(QueryOptions.FilterByTimePeriod))
         {
-           // prompt for time period selections
+           // TODO: prompt for time period selections 
         }
 
         if (queryOptions.Contains(QueryOptions.OrderBy))
         {
-           // multiselect prompt for columns and ASC or DESC
+           // TODO: multiselect prompt for columns and ASC or DESC
         }
 
         var table = new Table();
