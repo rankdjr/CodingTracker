@@ -7,7 +7,7 @@ using System.Data.SQLite;
 /// SqliteHelper provides utility methods for preparing and executing SQL commands using SQLite.
 /// It facilitates the interaction with the SQLite database by abstracting command preparation and execution.
 /// </summary>
-public class DbUtil
+public class DbHelper
 {
     /// <summary>
     /// Prepares an SQLite command with optional parameters and transaction.

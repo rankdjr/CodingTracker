@@ -44,7 +44,7 @@ public class DatabaseInitializer
                 {
                     try
                     {
-                        DbUtil.ExecuteCommand(CreateSessionTable, connection, transaction: transaction);
+                        DbHelper.ExecuteCommand(CreateSessionTable, connection, transaction: transaction);
                         transaction.Commit();
                     }
                     catch
