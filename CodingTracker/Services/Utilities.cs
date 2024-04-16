@@ -9,13 +9,13 @@ namespace CodingTracker.Services;
 /// ApplicationHelper provides utility methods to enhance the user interface interactions and string manipulations.
 /// It includes methods for displaying messages, parsing enums, and splitting camel case strings.
 /// </summary>
-public class Utilities
+public static class Utilities
 {
     /// <summary>
     /// Writes a markup message to the console with a newline.
     /// </summary>
     /// <param name="message">Markup object containing the message to be displayed.</param>
-    public void AnsiWriteLine(Markup message)
+    public static void AnsiWriteLine(Markup message)
     {
         AnsiConsole.Write(message);
         Console.WriteLine();
@@ -26,7 +26,7 @@ public class Utilities
     /// </summary>
     /// <param name="friendlyString">String to be converted into an enum.</param>
     /// <returns>Enum value corresponding to the string.</returns>
-    public T FromFriendlyString<T>(string friendlyString) where T : struct, Enum
+    public static T FromFriendlyString<T>(string friendlyString) where T : struct, Enum
     {
         string enumString = friendlyString.Replace(" ", "");
         return Enum.Parse<T>(enumString, true);
@@ -37,14 +37,12 @@ public class Utilities
     /// </summary>
     /// <param name="input">The camelCase string to split.</param>
     /// <returns>A string with each word separated by a space.</returns>
-    public string SplitCamelCase(string input)
+    public static string SplitCamelCase(string input)
     {
         return Regex.Replace(input, "([a-z])([A-Z])", "$1 $2");
     }
 
-    
-
-    public void PrintNewLines(int numOfNewLines)
+    public static void PrintNewLines(int numOfNewLines)
     {
         for (int i = 0; i < numOfNewLines; i++) { Console.WriteLine(); }
     }
