@@ -14,7 +14,7 @@ public class AppNewLogManager
     /// <summary>
     /// Initializes a new instance of the <see cref="AppNewLogManager"/> class.
     /// </summary>
-    /// <param name="sessionService">The service for managing habit data.</param>
+    /// <param name="sessionService">The service for managing Coding Session log data.</param>
     public AppNewLogManager(CodingSessionDAO codingSessionDAO)
     {
         _codingSessionDAO = codingSessionDAO;

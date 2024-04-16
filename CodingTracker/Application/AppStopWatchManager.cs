@@ -5,17 +5,17 @@ using Spectre.Console;
 
 namespace CodingTracker.Application;
 
-public class AppStopWatchManager
+public class AppStopwatchManager
 {
     private readonly CodingSessionDAO _codingSessionDAO;
     private Utilities _appUtil;
     private InputHandler _inputHandler;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AppNewLogManager"/> class.
+    /// Initializes a new instance of the <see cref="AppStopwatchManager"/> class.
     /// </summary>
-    /// <param name="codingSessionDAO">The service for managing habit data.</param>
-    public AppStopWatchManager(CodingSessionDAO codingSessionDAO)
+    /// <param name="codingSessionDAO">The service for tracking current Coding Sessions.</param>
+    public AppStopwatchManager(CodingSessionDAO codingSessionDAO)
     {
         _codingSessionDAO = codingSessionDAO;
         _appUtil = new Utilities();
@@ -23,7 +23,7 @@ public class AppStopWatchManager
     }
 
     /// <summary>
-    /// Starts the Session Manager menu loop.
+    /// Starts the Stopwatch Manager menu loop.
     /// </summary>
     public void Run()
     {
@@ -33,16 +33,16 @@ public class AppStopWatchManager
             _appUtil.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
-                .Title("Add New Session Log Records")
+                .Title("Start and Stop New Coding Session")
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions)).Select(_appUtil.SplitCamelCase)));
 
-            switch (Enum.Parse<LogManualSessionMenuOptions>(option.Replace(" ", "")))
+            switch (Enum.Parse<StartSessionMenuOptions>(option.Replace(" ", "")))
             {
-                case LogManualSessionMenuOptions.LogSessionByDateAndDuration:
+                case StartSessionMenuOptions.LogSessionByDateAndDuration:
                     LogSessionByDateAndDuration();
                     break;
-                case LogManualSessionMenuOptions.LogSessionByStartEndTimes:
+                case StartSessionMenuOptions.LogSessionByStartEndTimes:
                     LogSessionByStartEndTimes();
                     break;
                 case LogManualSessionMenuOptions.ReturnToMainMenu:

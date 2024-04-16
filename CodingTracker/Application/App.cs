@@ -11,6 +11,7 @@ namespace CodingTracker.Application;
 /// </summary>
 public class App
 {
+    private AppStopwatchManager _appStopwatchManager;
     private AppNewLogManager _newLogManager;
     private AppSessionManager _sessionManager;
     private AppGoalManager _goalManager;
@@ -35,6 +36,7 @@ public class App
         dbInitializer.Initialize();
 
         // Initialize services
+        _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO);
         _newLogManager = new AppNewLogManager(_codingSessionDAO);
         _sessionManager = new AppSessionManager(_codingSessionDAO);
         _goalManager = new AppGoalManager();  
@@ -62,7 +64,7 @@ public class App
             switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
             {
                 case MainMenuOption.StartNewSession:
-                    _sessionManager.Run();
+                    _appStopwatchManager.Run();
                     break;
                 case MainMenuOption.LogManualSession:
                     _newLogManager.Run();
