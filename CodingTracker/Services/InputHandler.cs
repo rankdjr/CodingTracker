@@ -6,13 +6,6 @@ namespace CodingTracker.Services;
 
 public class InputHandler
 {
-    /// <summary>
-    /// Prompts the user for a date input with custom messaging and validates the input.
-    /// The input must be a valid date in the format "yyyy-MM-dd" and cannot be a future date.
-    /// </summary>
-    /// <param name="promptMessage">The message displayed to the user when asking for the date input.</param>
-    /// <returns>The validated DateTime input from the user. If the input is not a valid date or is a future date, 
-    /// the function continues to prompt the user until a valid date is entered.</returns>
     public DateTime PromptForDate(string promptMessage, DatePrompt datePromptFormat)
     {
         var dateTimeFormat = datePromptFormat == DatePrompt.Short ? ConfigSettings.DateFormatShort : ConfigSettings.DateFormatLong;
@@ -44,13 +37,6 @@ public class InputHandler
         return DateTime.ParseExact(dateTimeInput, dateTimeFormat, CultureInfo.InvariantCulture);
     }
 
-    /// <summary>
-    /// Prompts the user for a TimeSpan input with custom messaging and validates the input.
-    /// The input must be a valid TimeSpan in the format "hh:mm:ss".
-    /// </summary>
-    /// <param name="promptMessage">The message displayed to the user when asking for the TimeSpan input.</param>
-    /// <returns>The validated TimeSpan input from the user. If the input is not a valid TimeSpan, 
-    /// the function continues to prompt the user until a valid TimeSpan is entered.</returns>
     public TimeSpan PromptForTimeSpan(string promptMessage)
     {
         string durationInput = AnsiConsole.Prompt(
@@ -78,13 +64,6 @@ public class InputHandler
         return TimeSpan.ParseExact(durationInput, ConfigSettings.TimeFormatType, CultureInfo.InvariantCulture);
     }
 
-    /// <summary>
-    /// Prompts the user to select a coding session from a list of sessions using a selection menu.
-    /// Each session is displayed with details such as session ID, date, start time, end time, and duration.
-    /// </summary>
-    /// <param name="sessionLogs">A list of CodingSessionModel instances representing the available sessions for selection.</param>
-    /// <param name="promptMessage">The message displayed to the user above the selection menu.</param>
-    /// <returns>The selected CodingSessionModel instance from the user. The selection is made through a console-based interactive menu.</returns>
     public CodingSessionModel PromptForSessionListSelection(List<CodingSessionModel> sessionLogs, string promptMessage)
     {
         return AnsiConsole.Prompt(
@@ -190,12 +169,6 @@ public class InputHandler
         return rankedProperties;
     }
 
-    /// <summary>
-    /// Prompts the user for a positive integer input with custom messaging and validates the input.
-    /// </summary>
-    /// <param name="promptMessage">The message displayed to the user when asking for input.</param>
-    /// <returns>The validated positive integer input from the user. If the input is not a valid integer or is not positive, 
-    /// the function continues to prompt the user until a valid positive integer is entered.</returns>
     public int PromptForPositiveInteger(string promptMessage)
     {
         return AnsiConsole.Prompt(
@@ -218,9 +191,6 @@ public class InputHandler
                 }));
     }
 
-    /// <summary>
-    /// Pauses execution and waits for the user to press any key, displaying a prompt message.
-    /// </summary>
     public void PauseForContinueInput()
     {
         AnsiConsole.WriteLine("Press any key to continue...");

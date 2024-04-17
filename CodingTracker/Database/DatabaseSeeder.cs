@@ -5,10 +5,6 @@ using Spectre.Console;
 
 namespace CodingTracker.Database;
 
-/// <summary>
-/// DatabaseSeeder contains methods to seed the database with initial data for coding sessions.
-/// It utilizes random data generation for dates and durations to provide a variety of sample data.
-/// </summary>
 public class DatabaseSeeder
 {
     private static Random _random = new Random();
@@ -24,10 +20,6 @@ public class DatabaseSeeder
         _codingSessionDAO = codingSessionDAO;
     }
 
-    /// <summary>
-    /// Seeds the database with log entries for existing habits, creating multiple logs per habit.
-    /// </summary>
-    /// <param name="numOfSessions">Number of session log entries to create.</param>
     public void SeedSessions(int numOfSessions)
     {
         for (int i = 0; i < numOfSessions / 2; i++)
@@ -51,10 +43,6 @@ public class DatabaseSeeder
         }
     }
 
-    /// <summary>
-    /// Seeds the application's database with initial data for habits and log entries.
-    /// This method is used prepopulate the database with test data.
-    /// </summary>
     public void SeedDatabase()
     {
         AnsiConsole.WriteLine("Starting database seeding...");

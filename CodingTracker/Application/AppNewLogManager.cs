@@ -10,19 +10,12 @@ public class AppNewLogManager
     private readonly CodingSessionDAO _codingSessionDAO;
     private InputHandler _inputHandler;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AppNewLogManager"/> class.
-    /// </summary>
-    /// <param name="sessionService">The service for managing Coding Session log data.</param>
     public AppNewLogManager(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
     {
         _codingSessionDAO = codingSessionDAO;
         _inputHandler = inputHandler;
     }
 
-    /// <summary>
-    /// Starts the Session Manager menu loop.
-    /// </summary>
     public void Run()
     {
         while (true)
@@ -49,9 +42,6 @@ public class AppNewLogManager
         }
     }
 
-    /// <summary>
-    /// Prompts the user for a session date and duration, then logs the session accordingly.
-    /// </summary>
     private void LogSessionByDateAndDuration()
     {
         AnsiConsole.Clear();
@@ -77,9 +67,6 @@ public class AppNewLogManager
         _inputHandler.PauseForContinueInput();
     }
 
-    /// <summary>
-    /// Prompts the user for a start and end time, validates the entries, and logs the session if the end time is after the start time.
-    /// </summary>
     private void LogSessionByStartEndTimes()
     {
         AnsiConsole.Clear();

@@ -3,11 +3,6 @@ using System.Data.SQLite;
 
 namespace CodingTracker.Database;
 
-/// <summary>
-/// DatabaseInitializer is responsible for setting up the initial structure of the database.
-/// It creates the necessary tables and views required for the application to function.
-/// This class ensures that the database is ready for use by the application upon initialization.
-/// </summary>
 public class DatabaseInitializer
 {
     private readonly DatabaseContext _dbContext;
@@ -23,21 +18,11 @@ public class DatabaseInitializer
             EndTime TEXT NULL
         )";
 
-    /// <summary>
-    /// Initializes a new instance of the DatabaseInitializer class with a DatabaseContext.
-    /// </summary>
-    /// <param name="context">The database context used for obtaining database connections.</param>
     public DatabaseInitializer(DatabaseContext context)
     {
         _dbContext = context;
     }
 
-    /// <summary>
-    /// Executes the SQL commands to create the initial database schema including tables and views.
-    /// Uses transactions to ensure that all operations are completed atomically.
-    /// 
-    /// Handles any exceptions during initialization and logs them appropriately.
-    /// </summary>
     public void Initialize()
     {
         try

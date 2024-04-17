@@ -5,28 +5,15 @@ using Dapper;
 
 namespace CodingTracker.DAO;
 
-/// <summary>
-/// SessionService handles all database operations related to coding sessions, including CRUD operations and queries.
-/// It uses the DatabaseContext to create connections and execute SQL commands data.
-/// </summary>
 public class CodingSessionDAO
 {
     private readonly DatabaseContext dbContext;
 
-    /// <summary>
-    /// Constructs a SessionService with a specified DatabaseContext for database operations.
-    /// </summary>
-    /// <param name="context">Database context to manage connections.</param>
     public CodingSessionDAO(DatabaseContext context)
     {
         dbContext = context;
     }
 
-    /// <summary>
-    /// Inserts a new coding session record into the database and returns a boolean indicating success.
-    /// </summary>
-    /// <param name="session">The coding session to insert.</param>
-    /// <returns>True if the session was successfully added; otherwise, false.</returns>
     public int InsertNewSession(CodingSessionModel session)
     {
         try
@@ -49,10 +36,6 @@ public class CodingSessionDAO
         }
     }
 
-    /// <summary>
-    /// Retrieves all session records from the database.
-    /// </summary>
-    /// <returns>A list of all coding sessions.</returns>
     public List<CodingSessionModel> GetAllSessionRecords()
     {
         try
@@ -71,10 +54,6 @@ public class CodingSessionDAO
         }
     }
 
-    /// <summary>
-    /// Deletes all coding session records from the database.
-    /// </summary>
-    /// <returns>True if the records were successfully deleted; otherwise, false.</returns>
     public bool DeleteAllSessions()
     {
         try
@@ -93,11 +72,6 @@ public class CodingSessionDAO
         }
     }
 
-    /// <summary>
-    /// Deletes a single coding session record from the database based on the specified session ID.
-    /// </summary>
-    /// <param name="sessionId">The ID of the session to be deleted. This is an integer representing the unique identifier for a session.</param>
-    /// <returns>Returns <c>true</c> if the deletion was successful and affected one or more rows in the database; otherwise, returns <c>false</c>.</returns>
     public bool DeleteSessionRecord(int sessionId)
     {
         try
@@ -116,11 +90,6 @@ public class CodingSessionDAO
         }
     }
 
-    /// <summary>
-    /// Updates an existing session in the database using the provided session model.
-    /// </summary>
-    /// <param name="session">The session model containing the updated values and the session's ID.</param>
-    /// <returns>Returns <c>true</c> if the update was successful and affected at least one row; otherwise, <c>false</c>.</returns>
     public bool UpdateSession(CodingSessionModel session)
     {
         try

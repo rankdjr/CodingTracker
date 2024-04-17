@@ -3,9 +3,6 @@ using System.Security.Cryptography;
 
 namespace CodingTracker.Models;
 
-/// <summary>
-/// Represents a coding session, allowing tracking of session duration on a specified date.
-/// </summary>
 public class CodingSessionModel
 {
     public int? Id { get; set; }
@@ -25,11 +22,6 @@ public class CodingSessionModel
 
     public CodingSessionModel() { }
 
-    /// <summary>
-    /// Initializes a new instance of the CodingSession class with a specified session date and duration.
-    /// </summary>
-    /// <param name="sessionDate">The date on which the session was held.</param>
-    /// <param name="duration">The duration of the session in hours.</param>
     public CodingSessionModel(DateTime sessionDate, TimeSpan duration)
     {
         SessionDate = sessionDate.ToString(ConfigSettings.DateFormatShort);
@@ -38,13 +30,6 @@ public class CodingSessionModel
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
-    /// <summary>
-    /// Initializes a new instance of the CodingSession class with a specified session date, start time, and end time.
-    /// Automatically calculates the session duration.
-    /// </summary>
-    /// <param name="sessionDate">The date on which the session was held.</param>
-    /// <param name="startTime">Start time of the session.</param>
-    /// <param name="endTime">End time of the session.</param>
     public CodingSessionModel(DateTime startTime, DateTime endTime)
     {
         SessionDate = startTime.ToString(ConfigSettings.DateFormatShort);
@@ -55,20 +40,12 @@ public class CodingSessionModel
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
-    /// <summary>
-    /// Updates the duration of the coding session.
-    /// </summary>
-    /// <param name="newDuration">New duration in hours.</param>
     public void SetDuration(TimeSpan newDuration)
     {
         Duration = newDuration.ToString(ConfigSettings.TimeFormatType);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
-    /// <summary>
-    /// Updates the duration of the coding session.
-    /// </summary>
-    /// <param name="newDuration">New duration in hours.</param>
     public void SetDuration(DateTime startTime, DateTime endTime)
     {
         TimeSpan elapsedTime = endTime - startTime;
@@ -76,33 +53,17 @@ public class CodingSessionModel
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
-    /// <summary>
-    /// Sets the session date property to a formatted string based on the provided DateTime value.
-    /// Also updates the 'DateUpdated' property to the current UTC date and time.
-    /// </summary>
-    /// <param name="date">The DateTime to be formatted and set as the session date.</param>
     public void SetSessionDate(DateTime date)
     {
         SessionDate = date.ToString(ConfigSettings.DateFormatShort);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
-    /// <summary>
-    /// Sets the start time property to a formatted string based on the provided DateTime value.
-    /// Also updates the 'DateUpdated' property to the current UTC date and time.
-    /// </summary>
-    /// <param name="date">The DateTime to be formatted and set as the start time.</param>
     public void SetStartTime(DateTime date)
     {
         SessionDate = date.ToString(ConfigSettings.DateFormatLong);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
-
-    /// <summary>
-    /// Sets the end time property to a formatted string based on the provided DateTime value.
-    /// Also updates the 'DateUpdated' property to the current UTC date and time.
-    /// </summary>
-    /// <param name="date">The DateTime to be formatted and set as the end time.</param>
 
     public void SetEndTime(DateTime date)
     {
