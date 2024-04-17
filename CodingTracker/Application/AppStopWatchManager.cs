@@ -126,7 +126,7 @@ public class AppStopwatchManager
         string panelSessionTitle = $"\n[bold]Current Session:[/] \n\n";
         string panelStartTime = $"[underline]Start Time[/]:       [royalblue1]{_startTime.ToString(ConfigSettings.DateFormatLong)}[/]\n";
         string panelElapsedTime = $"[underline]Elapsed Time[/]:     [steelblue1]{elapsedTime.ToString(@"hh\:mm\:ss")}[/]\n\n";
-        string panelLastUpdated = $"Last Updated at [darkgoldenrod]  {currentTime.ToString(ConfigSettings.DateFormatLong)}[/]";
+        string panelLastUpdated = $"Last Updated:     [darkgoldenrod]{currentTime.ToString(ConfigSettings.DateFormatLong)}[/]";
 
         string panelInformation = panelSessionTitle + panelStartTime + panelElapsedTime + panelLastUpdated;
 
