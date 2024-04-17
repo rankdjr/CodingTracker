@@ -41,7 +41,7 @@ public class App
         _newLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
         _sessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
         _goalManager = new AppGoalManager();  
-        _reportManager = new AppReportManager();
+        _reportManager = new AppReportManager(_codingSessionDAO, _inputHandler);
     }
 
     public void Run()

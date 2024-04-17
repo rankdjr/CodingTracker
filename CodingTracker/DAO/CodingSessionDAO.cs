@@ -2,6 +2,8 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Dapper;
+using System.Data.Entity;
+using System.Data.SQLite;
 using System.Data.SqlTypes;
 using System.Text;
 
@@ -9,18 +11,18 @@ namespace CodingTracker.DAO;
 
 public class CodingSessionDAO
 {
-    private readonly DatabaseContext dbContext;
+    private readonly DatabaseContext _dbContext;
 
     public CodingSessionDAO(DatabaseContext context)
     {
-        dbContext = context;
+        _dbContext = context;
     }
 
     public int InsertNewSession(CodingSessionModel session)
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = @"
                     INSERT INTO tb_CodingSessions (DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
@@ -42,7 +44,7 @@ public class CodingSessionDAO
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = "SELECT * FROM tb_CodingSessions";
                 var sessions = connection.Query<CodingSessionModel>(sql).ToList();
@@ -60,7 +62,7 @@ public class CodingSessionDAO
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = sqlstring;
                 var sessions = connection.Query<CodingSessionModel>(sql).ToList();
@@ -98,7 +100,7 @@ public class CodingSessionDAO
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = "DELETE FROM tb_CodingSessions";
                 int result = connection.Execute(sql);
@@ -116,7 +118,7 @@ public class CodingSessionDAO
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = "DELETE FROM tb_CodingSessions WHERE Id = @SessionId";
                 int result = connection.Execute(sql, new { SessionId = sessionId });
@@ -134,7 +136,7 @@ public class CodingSessionDAO
     {
         try
         {
-            using (var connection = dbContext.GetNewDatabaseConnection())
+            using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = @"
                 UPDATE tb_CodingSessions
@@ -166,4 +168,36 @@ public class CodingSessionDAO
         }
     }
 
+    public SessionStatistics GetSessionStatistics(TimePeriod period, int numberOfPeriods)
+    {
+        // SQL query to calculate total sessions and average duration
+        string sql = $@"
+        SELECT 
+            COUNT(*) AS TotalSessions, 
+            AVG(Duration) AS AverageDuration 
+        FROM tb_CodingSessions
+        WHERE SessionDate >= date('now', '-{Utilities.GetDaysMultiplier(period) * numberOfPeriods} days')";
+
+        try
+        {
+            // Using the Dapper ORM to execute the query
+            using (var connection = _dbContext.GetNewDatabaseConnection())
+            {
+                var result = connection.QuerySingleOrDefault<SessionStatistics>(sql);
+                if (result == null)
+                {
+                    // If no data is found, return a default instance with zeroed statistics
+                    return new SessionStatistics { TotalSessions = 0, AverageDuration = 0.0 };
+                }
+
+                return result;
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions by displaying an error message and returning a default instance of SessionStatistics
+            Utilities.DisplayExceptionErrorMessage("Error retrieving session statistics", ex.Message);
+            return new SessionStatistics();  // Return an empty/default SessionStatistics in case of error
+        }
+    }
 }
