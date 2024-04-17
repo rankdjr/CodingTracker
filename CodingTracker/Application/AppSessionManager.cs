@@ -2,6 +2,7 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
+using System.Drawing.Printing;
 
 namespace CodingTracker.Application;
 
@@ -50,21 +51,50 @@ public class AppSessionManager
 
     private void ViewSessions()
     {
-        var sessions = _codingSessionDAO.GetAllSessionRecords();
+        List<CodingSessionModel> codingSessions = new List<CodingSessionModel>();
 
-        if (sessions.Count == 0)
+        PromptForQueryOptions(); // TODO: implement
+
+        codingSessions = _codingSessionDAO.GetAllSessionRecords();
+
+        if (codingSessions.Count == 0)
         {
-            Utilities.DisplayWarningMessage("]No sessions found!");
+            Utilities.DisplayWarningMessage("No sessions found!");
             _inputHandler.PauseForContinueInput();
             return;
         }
 
-        // TODO: Build query option selections
+        Table sessionsViewTable = BuildCodingSessionsViewTable(codingSessions);
 
-        // TODO: prompt for time period selections 
-        
-        // TODO: multiselect prompt for columns and ASC or DESC
+        AnsiConsole.Write(sessionsViewTable);
+        Utilities.PrintNewLines(2);
 
+        _inputHandler.PauseForContinueInput();
+    }
+
+    private void PromptForQueryOptions()
+    {
+        TimePeriod? periodFilter = null;
+        int? numOfPeriods = null;
+
+        (periodFilter, numOfPeriods) = _inputHandler.PromptForTimePeriodAndCount();
+
+        // DEBUG: check for valid values
+        Console.WriteLine($"period: {periodFilter.ToString() ?? "NULL"}, number: {numOfPeriods}");
+        _inputHandler.PauseForContinueInput();
+
+
+        //// TODO: Build query option selections
+        //List<QueryOptions> selectedOrderByProperties = _inputHandler.PromptForQueryOptions();
+        //// TODO: multiselect prompt for columns and ASC or DESC
+        //if (selectedOrderByProperties.Any())
+        //{
+        //    _inputHandler.PromptForOrderByRanking(selectedOrderByProperties);
+        //}  
+    }
+
+    private Table BuildCodingSessionsViewTable(List<CodingSessionModel> codingSessions)
+    {
         var table = new Table();
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Grey);
@@ -78,7 +108,7 @@ public class AppSessionManager
         table.AddColumn(new TableColumn("[bold underline]Date Created[/]").LeftAligned());
         table.AddColumn(new TableColumn("[bold underline]Date Updated[/]").LeftAligned());
 
-        foreach (var session in sessions)
+        foreach (var session in codingSessions)
         {
             table.AddRow(
                 session.Id.ToString()!,
@@ -91,9 +121,8 @@ public class AppSessionManager
             );
         }
 
-        AnsiConsole.Write(table);
-        Utilities.PrintNewLines(2);
-        _inputHandler.PauseForContinueInput();
+
+        return table;
     }
 
     private void EditSession()

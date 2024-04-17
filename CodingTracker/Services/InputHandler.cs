@@ -1,6 +1,7 @@
 ﻿using CodingTracker.Models;
 using Spectre.Console;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace CodingTracker.Services;
 
@@ -91,83 +92,154 @@ public class InputHandler
                 .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
     }
 
-    // TODO: Refactor into custom query class
-    public List<QueryOptions> PromptForQueryOptions()
+    public (TimePeriod? periodFilter, int? numOfPeriods) PromptForTimePeriodAndCount()
     {
-        string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept, or [yellow]<enter>[/] with no selections to bypass)[/]";
+        TimePeriod? periodFilter = null;
+        int? numOfPeriods = null;
 
-        return AnsiConsole.Prompt(
-            new MultiSelectionPrompt<QueryOptions>()
-                .Title("Select filter criteria [blueviolet]TimePeriod[/] and/or [blueviolet]Order By[/]?")
-                .NotRequired()  // Not required to have filter criteria
-                .PageSize(10)
-                .InstructionsText(instructionText)
-                .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
-                .AddChoices(Enum.GetValues<QueryOptions>()));
-    }
-
-    // TODO: Refactor into custom query class
-    public void PromptForQueryFilterOptions()
-    {
-        TimePeriod selectedTimePeriod = AnsiConsole.Prompt(
-            new SelectionPrompt<TimePeriod>()
-                .Title("Select [blueviolet]TimePeriod[/] filter criteria:")
-                .PageSize(10)
-                .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
-                .AddChoices(Enum.GetValues<TimePeriod>()));
-
-        int numOfPeriods = PromptForPositiveInteger($"Please enter number of {selectedTimePeriod} to retrieve:");
-
-        Console.WriteLine($"{selectedTimePeriod}\t {numOfPeriods}");  
-    }
-
-    // TODO: Refactor into query custom class
-    public List<CodingSessionModel.EditableProperties> PromptForOrderByFilterOptions()
-    {
-        string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept)[/]";
-
-        var selectedProperties = AnsiConsole.Prompt(
-            new MultiSelectionPrompt<CodingSessionModel.EditableProperties>()
-                .Title("Select [blueviolet]Order By[/] filter criteria:")
-                .Required() // required if order by query option was selected
-                .PageSize(10)
-                .InstructionsText(instructionText)
-                .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
-                .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
-
-        if (!selectedProperties.Any())
-            return selectedProperties;
-
-        // Ranking the selected properties
-        List<CodingSessionModel.EditableProperties> rankedProperties = new List<CodingSessionModel.EditableProperties>();
-
-        AnsiConsole.WriteLine("Please rank the selected properties in order of importance (1 being the most important):");
-        foreach (var property in selectedProperties)
+        if (AnsiConsole.Confirm("Would you like to filter by past Time Periods (days, weeks, years)?"))
         {
-            AnsiConsole.WriteLine($"{Utilities.SplitCamelCase(property.ToString())}");
+            periodFilter = PromptForQueryTimePeriodOptions();
+            string promptMessage = $"Please enter number of {periodFilter} to retrieve:";
+            numOfPeriods = PromptForPositiveInteger(promptMessage);
         }
 
-        AnsiConsole.WriteLine("Enter the ranks in the same order as the properties listed above:");
-        var ranks = Console.ReadLine().Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+        return (periodFilter, numOfPeriods);
+    }
 
-        // Assuming the user enters the correct number of ranks
+    public TimePeriod? PromptForQueryTimePeriodOptions()
+    {
         try
         {
-            int[] rankIndices = ranks.Select(int.Parse).ToArray();
-            for (int i = 0; i < rankIndices.Length; i++)
-            {
-                // Insert the property into the ranked list based on user input
-                rankedProperties.Insert(rankIndices[i] - 1, selectedProperties[i]);
-            }
+            return AnsiConsole.Prompt(
+                new SelectionPrompt<TimePeriod>()
+                    .Title("Select [blueviolet]TimePeriod[/] filter criteria:")
+                    .PageSize(10)
+                    .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
+                    .AddChoices(Enum.GetValues<TimePeriod>()));
         }
-        catch
+        catch (OperationCanceledException)
         {
-            AnsiConsole.Markup("[red]Error in parsing ranks. Please try again.[/]");
-            // You might want to add some error handling or retry logic here
+            return null;
         }
-
-        return rankedProperties;
     }
+
+
+    //// TODO: verify logic
+    //public List<(CodingSessionModel.EditableProperties, SortDirection, int)> PromptForOrderByFilterOptions()
+    //{
+    //    string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept, [red]<escape>[/] to skip ordering)[/]";
+
+    //    var selectedProperties = AnsiConsole.Prompt(
+    //        new MultiSelectionPrompt<CodingSessionModel.EditableProperties>()
+    //            .Title("[blueviolet]Select Order By filter criteria (optional):[/]")
+    //            .PageSize(10)
+    //            .InstructionsText(instructionText)
+    //            .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
+    //            .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
+
+    //    if (!selectedProperties.Any())
+    //    {
+    //        AnsiConsole.Markup("[yellow]No ordering selected. Displaying unsorted results.[/]\n");
+    //        return new List<(CodingSessionModel.EditableProperties, SortDirection, int)>();
+    //    }
+
+    //    // Gather direction for each property
+    //    List<(CodingSessionModel.EditableProperties property, SortDirection direction)> propertiesWithDirections = new List<(CodingSessionModel.EditableProperties, SortDirection)>();
+    //    foreach (var property in selectedProperties)
+    //    {
+    //        var direction = AnsiConsole.Prompt(
+    //            new SelectionPrompt<SortDirection>()
+    //                .Title($"Select the sort direction for [blueviolet]{Utilities.SplitCamelCase(property.ToString())}[/]:")
+    //                .AddChoices(Enum.GetValues<SortDirection>()));
+    //        propertiesWithDirections.Add((property, direction));
+    //    }
+
+    //    // Prompt for ranking the properties
+    //    AnsiConsole.WriteLine("\nPlease rank the selected properties in order of importance (1 being the most important):");
+    //    foreach (var item in propertiesWithDirections)
+    //    {
+    //        AnsiConsole.WriteLine($"{Utilities.SplitCamelCase(item.property.ToString())} ({item.direction})");
+    //    }
+
+    //    AnsiConsole.WriteLine("Enter the ranks in the same order as the properties listed above, separated by spaces:");
+    //    var ranks = Console.ReadLine().Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+    //    List<(CodingSessionModel.EditableProperties, SortDirection, int)> rankedProperties = new List<(CodingSessionModel.EditableProperties, SortDirection, int)>();
+
+    //    if (ranks.Length == propertiesWithDirections.Count)
+    //    {
+    //        for (int i = 0; i < ranks.Length; i++)
+    //        {
+    //            if (int.TryParse(ranks[i], out int rank) && rank > 0 && rank <= ranks.Length)
+    //            {
+    //                rankedProperties.Add((propertiesWithDirections[i].property, propertiesWithDirections[i].direction, rank));
+    //            }
+    //            else
+    //            {
+    //                AnsiConsole.Markup("[red]Invalid rank entered. Please ensure all ranks are numeric and correspond to the listed properties.[/]\n");
+    //                return PromptForOrderByFilterOptions(); // Recurse on error
+    //            }
+    //        }
+    //    }
+    //    else
+    //    {
+    //        AnsiConsole.Markup("[red]The number of ranks must match the number of selected properties. Please try again.[/]\n");
+    //        return PromptForOrderByFilterOptions(); // Recurse on error
+    //    }
+
+    //    // Sort the list based on rank
+    //    rankedProperties.Sort((a, b) => a.Item3.CompareTo(b.Item3));
+    //    return rankedProperties;
+    //}
+
+
+    //// TODO: save for reference until query filtering is done
+    //public List<CodingSessionModel.EditableProperties> PromptForOrderByFilterOptions_OLD()
+    //{
+    //    string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept)[/]";
+
+    //    var selectedProperties = AnsiConsole.Prompt(
+    //        new MultiSelectionPrompt<CodingSessionModel.EditableProperties>()
+    //            .Title("Select [blueviolet]Order By[/] filter criteria:")
+    //            .Required() // required if order by query option was selected
+    //            .PageSize(10)
+    //            .InstructionsText(instructionText)
+    //            .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
+    //            .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
+
+    //    if (!selectedProperties.Any())
+    //        return selectedProperties;
+
+    //    // Ranking the selected properties
+    //    List<CodingSessionModel.EditableProperties> rankedProperties = new List<CodingSessionModel.EditableProperties>();
+
+    //    AnsiConsole.WriteLine("Please rank the selected properties in order of importance (1 being the most important):");
+    //    foreach (var property in selectedProperties)
+    //    {
+    //        AnsiConsole.WriteLine($"{Utilities.SplitCamelCase(property.ToString())}");
+    //    }
+
+    //    AnsiConsole.WriteLine("Enter the ranks in the same order as the properties listed above:");
+    //    var ranks = Console.ReadLine().Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+    //    // Assuming the user enters the correct number of ranks
+    //    try
+    //    {
+    //        int[] rankIndices = ranks.Select(int.Parse).ToArray();
+    //        for (int i = 0; i < rankIndices.Length; i++)
+    //        {
+    //            // Insert the property into the ranked list based on user input
+    //            rankedProperties.Insert(rankIndices[i] - 1, selectedProperties[i]);
+    //        }
+    //    }
+    //    catch
+    //    {
+    //        AnsiConsole.Markup("[red]Error in parsing ranks. Please try again.[/]");
+    //        // You might want to add some error handling or retry logic here
+    //    }
+
+    //    return rankedProperties;
+    //}
 
     public int PromptForPositiveInteger(string promptMessage)
     {

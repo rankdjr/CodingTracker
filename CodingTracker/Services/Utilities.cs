@@ -44,8 +44,8 @@ public static class Utilities
     public static void DisplayWarningMessage(string message)
     {
         PrintNewLines(1);
-        string successMessage = $"[lightgoldenrod2_2]{message}[/]";
-        AnsiConsole.MarkupLine(successMessage);
+        string warningMessage = $"[lightgoldenrod2_2]{message}[/]";
+        AnsiConsole.MarkupLine(warningMessage);
         PrintNewLines(1);
     }
 
