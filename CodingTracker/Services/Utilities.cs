@@ -61,4 +61,19 @@ public static class Utilities
         AnsiConsole.MarkupLine(successMessage);
         PrintNewLines(1);
     }
+    public static void DisplayWarningMessage(string message)
+    {
+        PrintNewLines(1);
+        string successMessage = $"[lightgoldenrod2_2]{message}[/]";
+        AnsiConsole.MarkupLine(successMessage);
+        PrintNewLines(1);
+    }
+
+    public static void DisplayCancellationMessage(string message)
+    {
+        PrintNewLines(1);
+        string successMessage = $"[blueviolet]{message}[/]";
+        AnsiConsole.MarkupLine(successMessage);
+        PrintNewLines(1);
+    }
 }

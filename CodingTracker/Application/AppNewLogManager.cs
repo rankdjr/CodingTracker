@@ -71,7 +71,7 @@ public class AppNewLogManager
         }
         else
         {
-            AnsiConsole.Markup("[red]Failed to log the session. Please try again or check the system logs.[/]");
+            Utilities.DisplayWarningMessage("Failed to log the session. Please try again or check the system logs.");
         }
 
         _inputHandler.PauseForContinueInput();
@@ -92,7 +92,7 @@ public class AppNewLogManager
             endTime = _inputHandler.PromptForDate($"Enter the End Time for the session {ConfigSettings.DateFormatLong}:", DatePrompt.Long);
             if (endTime <= startTime)
             {
-                AnsiConsole.Markup("[red]End time must be after start time. Please enter a valid end time.[/]\n");
+                Utilities.DisplayWarningMessage("End time must be after start time. Please enter a valid end time.");
             }
         } while (endTime <= startTime);
 
@@ -102,12 +102,11 @@ public class AppNewLogManager
         if (newRecordID != -1)
         {
             string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
-            AnsiConsole.Write(new Markup(successMessage));
-            Utilities.PrintNewLines(1);
+            Utilities.DisplaySuccessMessage(successMessage);
         }
         else
         {
-            AnsiConsole.Markup("[red]Failed to log the session. Please try again or check the system logs.[/]");
+            Utilities.DisplayWarningMessage("Failed to log the session. Please try again or check the system logs.");
         }
 
         _inputHandler.PauseForContinueInput();

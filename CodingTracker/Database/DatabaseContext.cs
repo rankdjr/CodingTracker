@@ -34,7 +34,7 @@ public class DatabaseContext
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error opening database connection: {ex.Message}");
+            Utilities.DisplayExceptionErrorMessage("Error opening database connection.", ex.Message);
             connection.Dispose();
             throw;
         }

@@ -69,11 +69,12 @@ public class DatabaseSeeder
                     SeedSessions(ConfigSettings.NumberOfCodingSessionsToSeed);
                 });
 
-            AnsiConsole.Write(new Markup("\n[green]Database seeded successfully![/]\n"));
+
+            Utilities.DisplaySuccessMessage("Database seeded successfully!");
         }
         catch (Exception ex)
         {
-            AnsiConsole.Write(new Markup($"\n[red]Error seeding database: {ex.Message}[/]\n"));
+            Utilities.DisplayExceptionErrorMessage("Error seeding database", ex.Message);
         }
         finally
         {

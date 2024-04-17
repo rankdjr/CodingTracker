@@ -44,8 +44,7 @@ public class CodingSessionDAO
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error inserting new session.");
-            Console.WriteLine($"{ex.Message}");
+            Utilities.DisplayExceptionErrorMessage("Error inserting new session.", ex.Message);
             return -1;  // Indicate failure
         }
     }
@@ -67,7 +66,7 @@ public class CodingSessionDAO
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error retrieving sessions: {ex.Message}");
+            Utilities.DisplayExceptionErrorMessage("Error retrieving sessions", ex.Message);
             return new List<CodingSessionModel>();  // Return an empty list in case of error
         }
     }
@@ -89,7 +88,7 @@ public class CodingSessionDAO
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting sessions: {ex.Message}");
+            Utilities.DisplayExceptionErrorMessage("Error deleting sessions", ex.Message);
             return false;
         }
     }
@@ -112,7 +111,7 @@ public class CodingSessionDAO
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error deleting session with ID {sessionId}: {ex.Message}");
+            Utilities.DisplayExceptionErrorMessage($"Error deleting session with ID {sessionId}", ex.Message);
             return false;
         }
     }
@@ -153,8 +152,7 @@ public class CodingSessionDAO
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error updating session with ID {session.Id}.");
-            Console.WriteLine($"{ex.Message}");
+            Utilities.DisplayExceptionErrorMessage($"Error updating session with ID {session.Id}.", ex.Message);
             return false;
         }
     }

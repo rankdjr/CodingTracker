@@ -1,4 +1,5 @@
-﻿using System.Data.SQLite;
+﻿using CodingTracker.Services;
+using System.Data.SQLite;
 
 namespace CodingTracker.Database;
 
@@ -61,7 +62,7 @@ public class DatabaseInitializer
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error initializing the database: {ex.Message}");
+            Utilities.DisplayExceptionErrorMessage("Error initializing the database.", ex.Message);
             throw;
         }
     }

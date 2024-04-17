@@ -231,9 +231,7 @@ public class InputHandler
     {
         if (!AnsiConsole.Confirm(actionPromptMessage))
         {
-            Utilities.PrintNewLines(1);
-            AnsiConsole.MarkupLine("[yellow]Operation cancelled.[/]");
-            Utilities.PrintNewLines(1);
+            Utilities.DisplayCancellationMessage("Operation cancelled.");
             PauseForContinueInput();
             return false;
         }
