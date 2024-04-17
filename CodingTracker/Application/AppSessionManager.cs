@@ -52,9 +52,8 @@ public class AppSessionManager
     {
         List<CodingSessionModel> codingSessions = new List<CodingSessionModel>();
 
-        var (periodFilter, numOfPeriods, orderByOptions) = PromptForQueryOptions(); // TODO: implement
+        var (periodFilter, numOfPeriods, orderByOptions) = PromptForQueryOptions(); 
 
-        //codingSessions = _codingSessionDAO.GetAllSessionRecords();
         codingSessions = _codingSessionDAO.GetSessionsRecords(periodFilter, numOfPeriods, orderByOptions);
 
         if (codingSessions.Count == 0)
@@ -66,12 +65,9 @@ public class AppSessionManager
 
         Table sessionsViewTable = BuildCodingSessionsViewTable(codingSessions);
 
+        AnsiConsole.Clear();
         AnsiConsole.Write(sessionsViewTable);
         Utilities.PrintNewLines(2);
-
-
-        AnsiConsole.Markup("[yellow]show filtering selection[/]\n"); // TODO: implement
-        AnsiConsole.Markup("[yellow]show ordering selection[/]\n"); // TODO: implement
 
         _inputHandler.PauseForContinueInput();
     }
