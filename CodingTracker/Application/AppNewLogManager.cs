@@ -28,13 +28,12 @@ public class AppNewLogManager
         while (true)
         {
             AnsiConsole.Clear();
-            Utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
             var option = AnsiConsole.Prompt(
-            new SelectionPrompt<string>()
-                .Title("Add New Session Log Records")
-                .PageSize(10)
-                .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions))
-                .Select(Utilities.SplitCamelCase)));
+                new SelectionPrompt<string>()
+                    .Title("Add New Session Log Records")
+                    .PageSize(10)
+                    .AddChoices(Enum.GetNames(typeof(LogManualSessionMenuOptions))
+                    .Select(Utilities.SplitCamelCase)));
 
             switch (Enum.Parse<LogManualSessionMenuOptions>(option.Replace(" ", "")))
             {
