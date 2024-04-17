@@ -20,12 +20,12 @@ public class App
     private DatabaseSeeder _dbSeeder;
     private CodingSessionDAO _codingSessionDAO;
     private InputHandler _inputHandler;
+    private bool _running = false;
 
-    /// <summary>
-    /// Initializes a new instance of App with the necessary services to manage coding sessions, goals, and reports.
-    /// </summary>
     public App()
     {
+        _running = true;
+
         // Setup database
         _dbContext = new DatabaseContext();
         DatabaseInitializer dbInitializer = new DatabaseInitializer(_dbContext);
@@ -44,52 +44,70 @@ public class App
         _reportManager = new AppReportManager();
     }
 
-    /// <summary>
-    /// Starts the main execution loop of the application. This method continuously displays the main menu and processes user input
-    /// until the user decides to exit the application.
-    /// </summary>
     public void Run()
     {
-        bool running = true;
-        while (running)
+        while (_running)
         {
             AnsiConsole.Clear();
-            Utilities.AnsiWriteLine(new Markup("[underline green]Select an option[/]\n"));
-            var option = AnsiConsole.Prompt(
+            displayMainScreenBanner();
+            PromptForSessionAction();            
+        }
+    }
+
+    private void displayMainScreenBanner()
+    {
+        AnsiConsole.Write(
+            new FigletText("Coding Tracker")
+                .LeftJustified()
+                .Color(Color.SeaGreen1_1));
+
+        Utilities.PrintNewLines(2);
+    }
+
+    private void PromptForSessionAction()
+    {
+        var selectedOption = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
+                .Title("Select an option:")
                 .PageSize(10)
                 .AddChoices(Enum.GetNames(typeof(MainMenuOption))
                 .Select(Utilities.SplitCamelCase)));
 
-            switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
-            {
-                case MainMenuOption.StartNewSession:
-                    _appStopwatchManager.Run();
-                    break;
-                case MainMenuOption.LogManualSession:
-                    _newLogManager.Run();
-                    break;
-                case MainMenuOption.ViewAndEditPreviousSessions:
-                    _sessionManager.Run();
-                    break;
-                case MainMenuOption.ViewAndEditGoals:
-                    _goalManager.Run();
-                    break;
-                case MainMenuOption.ViewReports:
-                    _reportManager.Run();
-                    break;
-                case MainMenuOption.SeedDatabase:
-                    _dbSeeder.SeedDatabase();
-                    break;
-                case MainMenuOption.Exit:
-                    running = false;
-                    AnsiConsole.Markup("[grey]Goodbye![/]");
-                    Utilities.PrintNewLines(2);
-                    break;
-                default:
-                    AnsiConsole.Markup("[red]Invalid option selected.[/]");
-                    break;
-            }
+        ExecuteSelectedOption(selectedOption);
+    }
+
+    private void ExecuteSelectedOption(string option)
+    {
+        switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
+        {
+            case MainMenuOption.StartNewSession:
+                _appStopwatchManager.Run();
+                break;
+            case MainMenuOption.LogManualSession:
+                _newLogManager.Run();
+                break;
+            case MainMenuOption.ViewAndEditPreviousSessions:
+                _sessionManager.Run();
+                break;
+            case MainMenuOption.ViewAndEditGoals:
+                _goalManager.Run();
+                break;
+            case MainMenuOption.ViewReports:
+                _reportManager.Run();
+                break;
+            case MainMenuOption.SeedDatabase:
+                _dbSeeder.SeedDatabase();
+                break;
+            case MainMenuOption.Exit:
+                closeSession();
+                break;
         }
+    }
+
+    private void closeSession()
+    {
+        _running = false;
+        AnsiConsole.Markup("[teal]Goodbye![/]");
+        Utilities.PrintNewLines(2);
     }
 }
