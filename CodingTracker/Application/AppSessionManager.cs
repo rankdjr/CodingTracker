@@ -2,6 +2,7 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
+using System.Collections.Generic;
 using System.Drawing.Printing;
 
 namespace CodingTracker.Application;
@@ -69,6 +70,10 @@ public class AppSessionManager
         AnsiConsole.Write(sessionsViewTable);
         Utilities.PrintNewLines(2);
 
+
+        AnsiConsole.Markup("[yellow]show filtering selection[/]\n"); // TODO: implement
+        AnsiConsole.Markup("[yellow]show ordering selection[/]\n"); // TODO: implement
+
         _inputHandler.PauseForContinueInput();
     }
 
@@ -80,17 +85,14 @@ public class AppSessionManager
         (periodFilter, numOfPeriods) = _inputHandler.PromptForTimePeriodAndCount();
 
         // DEBUG: check for valid values
-        Console.WriteLine($"period: {periodFilter.ToString() ?? "NULL"}, number: {numOfPeriods}");
+        Console.WriteLine($"period: {periodFilter.ToString() ?? "NULL"}, number: {numOfPeriods}"); // TODO: move to table display to show filtering applied
         _inputHandler.PauseForContinueInput();
 
-
+        // TODO: CLear screen and pass current filter options for viewing
         //// TODO: Build query option selections
-        //List<QueryOptions> selectedOrderByProperties = _inputHandler.PromptForQueryOptions();
-        //// TODO: multiselect prompt for columns and ASC or DESC
-        //if (selectedOrderByProperties.Any())
-        //{
-        //    _inputHandler.PromptForOrderByRanking(selectedOrderByProperties);
-        //}  
+        var orderByTuple = _inputHandler.PromptForOrderByFilterOptions();
+        Console.WriteLine(orderByTuple.ToString());
+
     }
 
     private Table BuildCodingSessionsViewTable(List<CodingSessionModel> codingSessions)
@@ -120,7 +122,6 @@ public class AppSessionManager
                 session.DateUpdated
             );
         }
-
 
         return table;
     }
