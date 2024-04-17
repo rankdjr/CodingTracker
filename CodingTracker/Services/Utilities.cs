@@ -46,4 +46,19 @@ public static class Utilities
     {
         for (int i = 0; i < numOfNewLines; i++) { Console.WriteLine(); }
     }
+
+    public static void DisplayExceptionErrorMessage(string message, string exception) 
+    {
+        PrintNewLines(1);
+        string errorMessage = $"[red]{message}[/]\n{exception}";
+        AnsiConsole.MarkupLine(errorMessage);
+        PrintNewLines(1);
+    }
+    public static void DisplaySuccessMessage(string message)
+    {
+        PrintNewLines(1);
+        string successMessage = $"[chartreuse1]{message}[/]";
+        AnsiConsole.MarkupLine(successMessage);
+        PrintNewLines(1);
+    }
 }
