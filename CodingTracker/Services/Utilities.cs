@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using CodingTracker.Models;
+using Spectre.Console;
 using System.Text.RegularExpressions;
 
 namespace CodingTracker.Services;
@@ -55,5 +56,40 @@ public static class Utilities
         string successMessage = $"[blueviolet]{message}[/]";
         AnsiConsole.MarkupLine(successMessage);
         PrintNewLines(1);
+    }
+    public static void DisplayCurrentQuerySelections(List<(CodingSessionModel.EditableProperties column, SortDirection? direction, int? rank)> orderByProperties, Color[] colors)
+    {
+        var table = new Table();
+        table.AddColumn("[bold]Column[/]");
+        table.AddColumn("[bold]Direction[/]");
+        table.AddColumn("[bold]Rank[/]");
+        table.Border(TableBorder.Rounded);
+
+        int colorIndex = 0;
+        foreach (var (column, direction, rank) in orderByProperties)
+        {
+            string columnName = $"[{colors[colorIndex++]}]{Utilities.SplitCamelCase(column.ToString())}[/]";
+            table.AddRow(columnName, direction?.ToString() ?? "Not Set", rank?.ToString() ?? "Not Set");
+        }
+
+        // Clear the previous output before displaying the updated table
+        AnsiConsole.Clear();
+        AnsiConsole.Write(table);
+        PrintNewLines(2);
+    }
+
+    public static int GetDaysMultiplier(TimePeriod period)
+    {
+        switch (period)
+        {
+            case TimePeriod.Days:
+                return 1;
+            case TimePeriod.Weeks:
+                return 7;
+            case TimePeriod.Years:
+                return 365;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(period), "Unsupported time period.");
+        }
     }
 }

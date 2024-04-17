@@ -124,75 +124,28 @@ public class InputHandler
         }
     }
 
-
     public List<(CodingSessionModel.EditableProperties, SortDirection, int)> PromptForOrderByFilterOptions()
     {
         AnsiConsole.Clear();
-        string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept, [red]<escape>[/] to skip ordering)[/]";
 
-        // Selection of properties
-        var selectedProperties = AnsiConsole.Prompt(
+        string instructionText = "[grey](Press [blue]<space>[/] to toggle a selection, [green]<enter>[/] to accept, or [yellow]<enter> (with no options)[/] to skip ordering)[/]";
+        var selectedColumns = AnsiConsole.Prompt(
             new MultiSelectionPrompt<CodingSessionModel.EditableProperties>()
-                .Title("[blueviolet]Select Order By filter criteria (optional):[/]")
+                .Title("Select Order By filter criteria [yellow](optional):[/]")
                 .NotRequired() // Order by sorting not required
                 .PageSize(10)
                 .InstructionsText(instructionText)
                 .UseConverter(options => Utilities.SplitCamelCase(options.ToString()))
                 .AddChoices(Enum.GetValues<CodingSessionModel.EditableProperties>()));
 
-        if (!selectedProperties.Any())
+        if (!selectedColumns.Any())
             return new List<(CodingSessionModel.EditableProperties, SortDirection, int)>();
 
-        // Initialize the list with null directions and not set ranks
-        List<(CodingSessionModel.EditableProperties property, SortDirection? direction, int? rank)> propertiesWithDirectionsRanks = selectedProperties
-            .Select(property => (property, (SortDirection?)null, (int?)null))
-            .ToList();
+        var sortQueryOptionsTupleList = BuildOrderByOptionsTupleList(selectedColumns);
 
-        DisplayCurrentSelections(propertiesWithDirectionsRanks);
-
-        // Iterate through properties to select direction
-        for (int i = 0; i < propertiesWithDirectionsRanks.Count; i++)
+        if (AnsiConsole.Confirm("Run query with these properties and directions? ('n' to reselect options)"))
         {
-            var direction = AnsiConsole.Prompt(
-                new SelectionPrompt<SortDirection>()
-                    .Title($"Select the sort direction for [blueviolet]{Utilities.SplitCamelCase(propertiesWithDirectionsRanks[i].property.ToString())}[/]:")
-                    .AddChoices(Enum.GetValues<SortDirection>()));
-
-            propertiesWithDirectionsRanks[i] = (propertiesWithDirectionsRanks[i].property, direction, propertiesWithDirectionsRanks[i].rank);
-
-            // Update the display after each direction is selected
-            DisplayCurrentSelections(propertiesWithDirectionsRanks);
-        }
-
-        // Interactively ask for the rank for each property
-        for (int i = 0; i < propertiesWithDirectionsRanks.Count; i++)
-        {
-            int rank = AnsiConsole.Prompt(
-                new TextPrompt<int>($"Enter the rank for [blueviolet]{Utilities.SplitCamelCase(propertiesWithDirectionsRanks[i].property.ToString())}[/]:")
-                    .Validate(input =>
-                    {
-                        if (input < 1 || input > propertiesWithDirectionsRanks.Count || propertiesWithDirectionsRanks.Any(p => p.rank == input))
-                            return ValidationResult.Error("[red]Invalid rank. Ensure ranks are unique and within the correct range.[/]");
-                        return ValidationResult.Success();
-                    }));
-
-            propertiesWithDirectionsRanks[i] = (propertiesWithDirectionsRanks[i].property, propertiesWithDirectionsRanks[i].direction, rank);
-
-            // Update the display after each rank is set
-            DisplayCurrentSelections(propertiesWithDirectionsRanks);
-        }
-
-        // Final confirmation before executing the query
-        AnsiConsole.Clear();
-        DisplayCurrentSelections(propertiesWithDirectionsRanks);
-
-        if (AnsiConsole.Confirm("Run query with these properties and directions?"))
-        {
-            // Sort the list based on rank and return
-            return propertiesWithDirectionsRanks
-                .Select(p => (p.property, p.direction!.Value, p.rank!.Value))
-                .OrderBy(p => p.Item3)
-                .ToList();
+            return sortQueryOptionsTupleList;
         }
         else
         {
@@ -200,22 +153,57 @@ public class InputHandler
         }
     }
 
-    private void DisplayCurrentSelections(List<(CodingSessionModel.EditableProperties property, SortDirection? direction, int? rank)> properties)
+    public List<(CodingSessionModel.EditableProperties, SortDirection, int)> BuildOrderByOptionsTupleList(List<CodingSessionModel.EditableProperties> selectedColumns)
     {
-        var table = new Table();
-        table.AddColumn("[blueviolet]Property[/]");
-        table.AddColumn("[blueviolet]Direction[/]");
-        table.AddColumn("[blueviolet]Rank[/]");
-        table.Border(TableBorder.Rounded);
+        Color[] colors = new Color[] {
+            Color.Teal,
+            Color.IndianRed,
+            Color.RoyalBlue1,
+            Color.Yellow4_1
+        };
 
-        foreach (var (property, direction, rank) in properties)
+        // Initialize list of selected column options to display table view while showing ordering/rank selections
+        List<(CodingSessionModel.EditableProperties property, SortDirection? direction, int? rank)> orderByTuple = selectedColumns
+            .Select(property => (property, (SortDirection?)null, (int?)null))
+            .ToList();
+
+        // Set Ordering directions for selected column options
+        for (int i = 0; i < orderByTuple.Count; i++)
         {
-            table.AddRow(Utilities.SplitCamelCase(property.ToString()), direction?.ToString() ?? "Not Set", rank?.ToString() ?? "Not Set");
+            Utilities.DisplayCurrentQuerySelections(orderByTuple, colors);
+            var direction = AnsiConsole.Prompt(
+                new SelectionPrompt<SortDirection>()
+                    .Title($"Select the sort direction for [{colors[i]}]{Utilities.SplitCamelCase(orderByTuple[i].property.ToString())}[/]:")
+                    .AddChoices(Enum.GetValues<SortDirection>()));
+
+            orderByTuple[i] = (orderByTuple[i].property, direction, orderByTuple[i].rank);
+
         }
 
-        // Clear the previous output before displaying the updated table
+        // Set Ordering ranks for selected column options
+        for (int i = 0; i < orderByTuple.Count; i++)
+        {
+            Utilities.DisplayCurrentQuerySelections(orderByTuple, colors);
+            int rank = AnsiConsole.Prompt(
+                new TextPrompt<int>($"Enter the rank for [{colors[i]}]{Utilities.SplitCamelCase(orderByTuple[i].property.ToString())}[/]:")
+                    .Validate(input =>
+                    {
+                        if (input < 1 || input > orderByTuple.Count || orderByTuple.Any(p => p.rank == input))
+                            return ValidationResult.Error("[red]Invalid rank. Ensure ranks are unique and within the correct range.[/]");
+                        return ValidationResult.Success();
+                    }));
+
+            orderByTuple[i] = (orderByTuple[i].property, orderByTuple[i].direction, rank);
+        }
+
+        // Update after final selection
         AnsiConsole.Clear();
-        AnsiConsole.Write(table);
+        Utilities.DisplayCurrentQuerySelections(orderByTuple, colors);
+
+        return orderByTuple
+            .Select(p => (p.property, p.direction!.Value, p.rank!.Value))
+            .OrderBy(p => p.Item3)
+            .ToList();
     }
 
     public int PromptForPositiveInteger(string promptMessage)
@@ -224,13 +212,11 @@ public class InputHandler
             new TextPrompt<int>(promptMessage)
                 .Validate(input =>
                 {
-                    // Attempt to parse the input as an integer
                     if (!int.TryParse(input.ToString().Trim(), out int parsedQuantity))
                     {
                         return ValidationResult.Error("[red]Please enter a valid integer number.[/]");
                     }
 
-                    // Check if the parsed integer is positive
                     if (parsedQuantity <= 0)
                     {
                         return ValidationResult.Error("[red]Please enter a positive number.[/]");

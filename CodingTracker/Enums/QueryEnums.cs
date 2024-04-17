@@ -11,12 +11,6 @@ public enum QueryOptions
     OrderBy,
 }
 
-public enum SortField 
-{ 
-    SessionDate, 
-    Duration 
-}
-
 public enum SortDirection
 {
     ASC,

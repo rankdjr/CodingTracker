@@ -2,8 +2,6 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
-using System.Collections.Generic;
-using System.Drawing.Printing;
 
 namespace CodingTracker.Application;
 
@@ -54,9 +52,10 @@ public class AppSessionManager
     {
         List<CodingSessionModel> codingSessions = new List<CodingSessionModel>();
 
-        PromptForQueryOptions(); // TODO: implement
+        var (periodFilter, numOfPeriods, orderByOptions) = PromptForQueryOptions(); // TODO: implement
 
-        codingSessions = _codingSessionDAO.GetAllSessionRecords();
+        //codingSessions = _codingSessionDAO.GetAllSessionRecords();
+        codingSessions = _codingSessionDAO.GetSessionsRecords(periodFilter, numOfPeriods, orderByOptions);
 
         if (codingSessions.Count == 0)
         {
@@ -77,22 +76,12 @@ public class AppSessionManager
         _inputHandler.PauseForContinueInput();
     }
 
-    private void PromptForQueryOptions()
+    private (TimePeriod? periodFilter, int? numOfPeriods, List<(CodingSessionModel.EditableProperties, SortDirection, int)> orderByOptions) PromptForQueryOptions()
     {
-        TimePeriod? periodFilter = null;
-        int? numOfPeriods = null;
-
-        (periodFilter, numOfPeriods) = _inputHandler.PromptForTimePeriodAndCount();
-
-        // DEBUG: check for valid values
-        Console.WriteLine($"period: {periodFilter.ToString() ?? "NULL"}, number: {numOfPeriods}"); // TODO: move to table display to show filtering applied
-        _inputHandler.PauseForContinueInput();
-
-        // TODO: CLear screen and pass current filter options for viewing
-        //// TODO: Build query option selections
-        var orderByTuple = _inputHandler.PromptForOrderByFilterOptions();
-        Console.WriteLine(orderByTuple.ToString());
-
+        (TimePeriod? periodFilter, int? numOfPeriods) = _inputHandler.PromptForTimePeriodAndCount();
+        List<(CodingSessionModel.EditableProperties, SortDirection, int)> filterAndSortOptions = _inputHandler.PromptForOrderByFilterOptions();
+        
+        return (periodFilter, numOfPeriods, filterAndSortOptions);
     }
 
     private Table BuildCodingSessionsViewTable(List<CodingSessionModel> codingSessions)
