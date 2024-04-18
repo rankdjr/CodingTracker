@@ -13,7 +13,6 @@ public class DatabaseSeeder
 
     public DatabaseSeeder(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
     {
-        // Using the current time to generate a seed
         int seed = (int)DateTime.Now.Ticks;
         _random = new Random(seed);
         _inputHandler = inputHandler;
@@ -22,21 +21,16 @@ public class DatabaseSeeder
 
     public void SeedSessions(int numOfSessions)
     {
-        for (int i = 0; i < numOfSessions / 2; i++)
-        {
-            int hours = _random.Next(0, 12); // Random value limited to 12 hours
-            int minutes = _random.Next(0, 60); // Random value limited to 59 minutes
-            TimeSpan duration = TimeSpan.FromHours(hours) + TimeSpan.FromMinutes(minutes);
-            DateTime sessionDate = DateTime.Today.AddDays(-_random.Next(1, 30));
+        // number of seeds is in App.config
 
-            CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
-            _codingSessionDAO.InsertNewSession(newSession);
-        }
+        int lowerBoundarySessionDuration = 60; // 60 minutes loweer boundary for duration
+        int upperBoundarySessionDuration = 240; // 4 hour upper boundary for duration
+        int lowerBoundarySeedDate = Utilities.GetDaysMultiplier(TimePeriod.Years) * 3; 
 
-        for (int i = 0; i < numOfSessions / 2; i++)
+        for (int i = 0; i < numOfSessions; i++)
         {
-            DateTime endTime = DateTime.Today.AddDays(-_random.Next(1, 30));
-            DateTime startTime = endTime.AddMinutes(-_random.Next(1, 180));
+            DateTime endTime = DateTime.Today.AddDays(-_random.Next(1, lowerBoundarySeedDate));
+            DateTime startTime = endTime.AddMinutes(-_random.Next(lowerBoundarySessionDuration, upperBoundarySessionDuration));
 
             CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
             _codingSessionDAO.InsertNewSession(newSession);
