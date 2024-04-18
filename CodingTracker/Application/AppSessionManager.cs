@@ -215,7 +215,7 @@ public class AppSessionManager
         }
         else
         {
-            Utilities.DisplayWarningMessage("No sessions were deleted. (The table might have been empty).");
+            Utilities.DisplayWarningMessage("No sessions were deleted. (The table may have been empty).");
             _inputHandler.PauseForContinueInput();
         }
     }
