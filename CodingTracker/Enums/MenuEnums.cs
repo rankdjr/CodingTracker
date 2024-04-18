@@ -38,5 +38,6 @@ public enum ManageGoalsMenuOptions
     SetNewGoal,
     EditExistingGoal,
     DeleteGoal,
+    DeleteAllGoals,
     ReturnToMainMenu
 }
