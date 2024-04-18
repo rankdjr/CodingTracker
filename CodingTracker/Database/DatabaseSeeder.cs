@@ -25,7 +25,7 @@ public class DatabaseSeeder
 
         int lowerBoundarySessionDuration = 60; // 60 minutes loweer boundary for duration
         int upperBoundarySessionDuration = 240; // 4 hour upper boundary for duration
-        int lowerBoundarySeedDate = Utilities.GetDaysMultiplier(TimePeriod.Years) * 3; 
+        int lowerBoundarySeedDate = Utilities.GetDaysMultiplier(TimePeriod.Years) * 3; // 3 year lower seed boundary
 
         for (int i = 0; i < numOfSessions; i++)
         {
