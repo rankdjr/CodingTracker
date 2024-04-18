@@ -10,24 +10,25 @@ public class CodingSessionModel
     public string DateUpdated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     public string SessionDate { get; set; }= DateTime.UtcNow.ToString(ConfigSettings.DateFormatShort);
     public string Duration { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormatType);
-    public string? StartTime { get; set; }
-    public string? EndTime { get; set; }
-    public enum EditableProperties
+    public string StartTime { get; set; }
+    public string EndTime { get; set; }
+
+    public enum SessionProperties
     {
+        Id,
+        DateCreated,
+        DateUpdated,
         SessionDate,
         Duration,
         StartTime,
         EndTime
     }
 
-    public CodingSessionModel() { }
-
-    public CodingSessionModel(DateTime sessionDate, TimeSpan duration)
+    public enum EditableProperties
     {
-        SessionDate = sessionDate.ToString(ConfigSettings.DateFormatShort);
-        Duration = duration.ToString(ConfigSettings.TimeFormatType);
-        DateCreated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
-        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+        SessionDate,
+        StartTime,
+        EndTime
     }
 
     public CodingSessionModel(DateTime startTime, DateTime endTime)
@@ -37,12 +38,6 @@ public class CodingSessionModel
         EndTime = endTime.ToString(ConfigSettings.DateFormatLong);
         Duration = (endTime - startTime).ToString(ConfigSettings.TimeFormatType);  // Calculate duration based on start and end times
         DateCreated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
-        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
-    }
-
-    public void SetDuration(TimeSpan newDuration)
-    {
-        Duration = newDuration.ToString(ConfigSettings.TimeFormatType);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
@@ -61,13 +56,15 @@ public class CodingSessionModel
 
     public void SetStartTime(DateTime date)
     {
-        SessionDate = date.ToString(ConfigSettings.DateFormatLong);
+        StartTime = date.ToString(ConfigSettings.DateFormatLong);
+        SetDuration(date, DateTime.Parse(EndTime));
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
     public void SetEndTime(DateTime date)
     {
-        SessionDate = date.ToString(ConfigSettings.DateFormatLong);
+        EndTime = date.ToString(ConfigSettings.DateFormatLong);
+        SetDuration(DateTime.Parse(StartTime), date);
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 }

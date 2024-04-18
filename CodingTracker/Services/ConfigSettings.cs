@@ -11,5 +11,6 @@ public class ConfigSettings
     public static string TimeFormatType => ConfigurationManager.AppSettings["TimeFormatType"]!;
     public static string TimeFormatString => ConfigurationManager.AppSettings["TimeFormatString"]!;
     public static int NumberOfCodingSessionsToSeed => Int32.Parse(ConfigurationManager.AppSettings["NumberOfCodingSessionsToSeed"]!);
+    public static int NumberOfCodingGoalsToSeed => Int32.Parse(ConfigurationManager.AppSettings["NumberOfCodingGoalsToSeed"]!);
 
 }

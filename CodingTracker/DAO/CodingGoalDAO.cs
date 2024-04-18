@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CodingTracker.DAO;
 
-internal class CodingGoalDAO
+public class CodingGoalDAO
 {
     private readonly DatabaseContext _dbContext;
 

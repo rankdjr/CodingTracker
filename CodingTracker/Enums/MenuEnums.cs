@@ -19,8 +19,7 @@ public enum StartSessionMenuOptions
 
 public enum LogManualSessionMenuOptions
 {
-    LogSessionByDateAndDuration,
-    LogSessionByStartEndTimes,
+    LogSessionManualSession,
     ReturnToMainMenu
 }
 
@@ -39,12 +38,5 @@ public enum ManageGoalsMenuOptions
     SetNewGoal,
     EditExistingGoal,
     DeleteGoal,
-    ReturnToMainMenu
-}
-public enum ReportsMenuOptions
-{
-    Report1,
-    Report2,
-    Report3,
     ReturnToMainMenu
 }

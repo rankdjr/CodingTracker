@@ -19,6 +19,7 @@ public class App
     private DatabaseContext _dbContext;
     private DatabaseSeeder _dbSeeder;
     private CodingSessionDAO _codingSessionDAO;
+    private CodingGoalDAO _codingGoalDAO;
     private InputHandler _inputHandler;
     private bool _running = false;
 
@@ -34,13 +35,14 @@ public class App
         // Initialize services
         _inputHandler = new InputHandler();
         _codingSessionDAO = new CodingSessionDAO(_dbContext);
-        _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _inputHandler);
+        _codingGoalDAO = new CodingGoalDAO(_dbContext);
+        _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _codingGoalDAO,_inputHandler);
 
         // Setup child applications
         _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO, _inputHandler);
         _newLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
         _sessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
-        _goalManager = new AppGoalManager();  
+        _goalManager = new AppGoalManager(_codingGoalDAO, _inputHandler);  
         _reportManager = new AppReportManager(_codingSessionDAO, _inputHandler);
     }
 

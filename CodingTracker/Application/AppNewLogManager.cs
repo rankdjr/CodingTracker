@@ -30,41 +30,13 @@ public class AppNewLogManager
 
             switch (Enum.Parse<LogManualSessionMenuOptions>(option.Replace(" ", "")))
             {
-                case LogManualSessionMenuOptions.LogSessionByDateAndDuration:
-                    LogSessionByDateAndDuration();
-                    break;
-                case LogManualSessionMenuOptions.LogSessionByStartEndTimes:
+                case LogManualSessionMenuOptions.LogSessionManualSession:
                     LogSessionByStartEndTimes();
                     break;
                 case LogManualSessionMenuOptions.ReturnToMainMenu:
                     return;
             }
         }
-    }
-
-    private void LogSessionByDateAndDuration()
-    {
-        AnsiConsole.Clear();
-
-        DateTime sessionDate = _inputHandler.PromptForDate($"Enter the date for the log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
-        TimeSpan duration = _inputHandler.PromptForTimeSpan($"Enter the duration of the session. Please use the format [[ {ConfigSettings.TimeFormatString} ]]:");
-
-        // Create new coding session object via constructor (duration manually entered here)
-        CodingSessionModel newSession = new CodingSessionModel(sessionDate, duration);
-
-        int newRecordID = _codingSessionDAO.InsertNewSession(newSession);
-        if (newRecordID != -1)
-        {
-            string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
-            AnsiConsole.Write(new Markup(successMessage));
-            Utilities.PrintNewLines(1);
-        }
-        else
-        {
-            Utilities.DisplayWarningMessage("Failed to log the session. Please try again or check the system logs.");
-        }
-
-        _inputHandler.PauseForContinueInput();
     }
 
     private void LogSessionByStartEndTimes()
@@ -85,6 +57,9 @@ public class AppNewLogManager
 
         // Create new coding session object via constructor (duration automatically calculated)
         CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
+
+        // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
+
         int newRecordID = _codingSessionDAO.InsertNewSession(newSession);
         if (newRecordID != -1)
         {

@@ -82,18 +82,18 @@ public class AppSessionManager
 
     private Table BuildCodingSessionsViewTable(List<CodingSessionModel> codingSessions)
     {
+        string TableTitle = "[yellow]Session Overview[/]";
+
         var table = new Table();
         table.Border(TableBorder.Rounded);
         table.BorderColor(Color.Grey);
-        table.Title("[yellow]Session Overview[/]");
+        table.Title(TableTitle);
 
-        table.AddColumn(new TableColumn("[bold underline]ID[/]").LeftAligned());
-        table.AddColumn(new TableColumn("[bold underline]Session Date[/]").Centered());
-        table.AddColumn(new TableColumn("[bold underline]Duration[/]").Centered());
-        table.AddColumn(new TableColumn("[bold underline]Start Time[/]").Centered());
-        table.AddColumn(new TableColumn("[bold underline]End Time[/]").Centered());
-        table.AddColumn(new TableColumn("[bold underline]Date Created[/]").LeftAligned());
-        table.AddColumn(new TableColumn("[bold underline]Date Updated[/]").LeftAligned());
+        foreach (var property in Enum.GetValues<CodingSessionModel.SessionProperties>())
+        {
+            string columnName = $"[bold underline]{property}[/]";
+            table.AddColumn(new TableColumn(columnName).Centered());
+        }
 
         foreach (var session in codingSessions)
         {
@@ -101,8 +101,8 @@ public class AppSessionManager
                 session.Id.ToString()!,
                 session.SessionDate,
                 session.Duration,
-                session.StartTime ?? "N/A", // Handle nullable StartTime
-                session.EndTime ?? "N/A",   // Handle nullable EndTime
+                session.StartTime,
+                session.EndTime,
                 session.DateCreated,
                 session.DateUpdated
             );
@@ -137,17 +137,12 @@ public class AppSessionManager
         foreach (var property in propertiesToEdit)
         {
             DateTime newDate;
-            TimeSpan newDuration;
 
             switch (property)
             {
                 case CodingSessionModel.EditableProperties.SessionDate:
                     newDate = _inputHandler.PromptForDate($"Enter the SessionDate for log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
                     sessionEntrySelection.SetSessionDate(newDate);
-                    break;
-                case CodingSessionModel.EditableProperties.Duration:
-                    newDuration = _inputHandler.PromptForTimeSpan($"Enter new Duration for log entry {ConfigSettings.TimeFormatString}:");
-                    sessionEntrySelection.SetDuration(newDuration);
                     break;
                 case CodingSessionModel.EditableProperties.StartTime:
                     newDate = _inputHandler.PromptForDate($"Enter new StartTime for log entry {ConfigSettings.DateFormatLong}:", DatePrompt.Long);
@@ -160,16 +155,19 @@ public class AppSessionManager
             }
         }
 
+        // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
+
         if (_codingSessionDAO.UpdateSession(sessionEntrySelection))
         {
             Utilities.DisplaySuccessMessage("Coding session successfully updated!");
-            _inputHandler.PauseForContinueInput();
         }
         else
         {
             Utilities.DisplayWarningMessage("No Coding sessions were updated.");
-            _inputHandler.PauseForContinueInput();
         }
+
+
+        _inputHandler.PauseForContinueInput();
     }
 
     private void DeleteSession()
@@ -187,6 +185,8 @@ public class AppSessionManager
         
         if (AnsiConsole.Confirm($"Are you sure you want to delete this log entry (ID: {sessionEntrySelection.Id})?"))
         {
+            // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
+
             if (_codingSessionDAO.DeleteSessionRecord(sessionEntrySelection.Id!.Value))
             {
                 Utilities.DisplaySuccessMessage("Log entry successfully deleted!");
@@ -206,6 +206,8 @@ public class AppSessionManager
 
     private void DeleteAllSession()
     {
+        // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
+
         if (_codingSessionDAO.DeleteAllSessions())
         {
             Utilities.DisplaySuccessMessage("All sessions have been successfully deleted!");

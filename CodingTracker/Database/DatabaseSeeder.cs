@@ -10,13 +10,15 @@ public class DatabaseSeeder
     private static Random _random = new Random();
     private InputHandler _inputHandler;
     private CodingSessionDAO _codingSessionDAO;
+    private CodingGoalDAO _codingGoalDAO;
 
-    public DatabaseSeeder(CodingSessionDAO codingSessionDAO, InputHandler inputHandler)
+    public DatabaseSeeder(CodingSessionDAO codingSessionDAO, CodingGoalDAO codingGoalDAO, InputHandler inputHandler)
     {
         int seed = (int)DateTime.Now.Ticks;
         _random = new Random(seed);
         _inputHandler = inputHandler;
         _codingSessionDAO = codingSessionDAO;
+        _codingGoalDAO = codingGoalDAO;
     }
 
     public void SeedSessions(int numOfSessions)
@@ -33,8 +35,30 @@ public class DatabaseSeeder
             DateTime startTime = endTime.AddMinutes(-_random.Next(lowerBoundarySessionDuration, upperBoundarySessionDuration));
 
             CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
+
+            // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
+
             _codingSessionDAO.InsertNewSession(newSession);
         }
+    }
+
+    public void SeedGoals(int numOfGoals)
+    {
+        TimeSpan lowerBoundaryGoalDuration = new TimeSpan(0, 30, 0); // 30 minutes lower boundary for duration
+        TimeSpan upperBoundaryGoalDuration = new TimeSpan(100, 0, 0); // 100 hour upper boundary for duration
+
+        for (int i = 0; i < numOfGoals; i++)
+        {
+            TimeSpan duration = new TimeSpan(0, _random.Next(lowerBoundaryGoalDuration.Minutes, upperBoundaryGoalDuration.Minutes), 0);
+
+            CodingGoalModel newGoal = new CodingGoalModel(duration);
+            _codingGoalDAO.InsertNewGoal(newGoal);
+        }
+
+        // Create a master goal with a duration of 10,000 hours
+        TimeSpan masterDuration = new TimeSpan(10000, 0, 0);
+        CodingGoalModel masterGoal = new CodingGoalModel(masterDuration);
+        _codingGoalDAO.InsertNewGoal(masterGoal);
     }
 
     public void SeedDatabase()
@@ -47,7 +71,7 @@ public class DatabaseSeeder
                 .Spinner(Spinner.Known.Dots)
                 .Start("Processing...", ctx =>
                 {
-                    // Call to seed sessions
+                    SeedGoals(ConfigSettings.NumberOfCodingGoalsToSeed);
                     SeedSessions(ConfigSettings.NumberOfCodingSessionsToSeed);
                 });
 

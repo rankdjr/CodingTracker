@@ -167,7 +167,6 @@ public class CodingSessionDAO
 
     public SessionStatistics GetSessionStatistics(TimePeriod period, int numberOfPeriods)
     {
-        // SQL query to calculate total sessions and average duration
         string sql = $@"
         SELECT 
             COUNT(*) AS TotalSessions, 
@@ -177,13 +176,11 @@ public class CodingSessionDAO
 
         try
         {
-            // Using the Dapper ORM to execute the query
             using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 var result = connection.QuerySingleOrDefault<SessionStatistics>(sql);
                 if (result == null)
                 {
-                    // If no data is found, return a default instance with zeroed statistics
                     return new SessionStatistics { TotalSessions = 0, AverageDuration = 0.0 };
                 }
 
@@ -192,7 +189,6 @@ public class CodingSessionDAO
         }
         catch (Exception ex)
         {
-            // Handle exceptions by displaying an error message and returning a default instance of SessionStatistics
             Utilities.DisplayExceptionErrorMessage("Error retrieving session statistics", ex.Message);
             return new SessionStatistics();  // Return an empty/default SessionStatistics in case of error
         }
