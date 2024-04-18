@@ -1,4 +1,5 @@
 ﻿using CodingTracker.Services;
+using System.Security.Permissions;
 
 namespace CodingTracker.Models;
 
@@ -7,9 +8,12 @@ public class CodingGoalModel
     public int Id { get; set; }
     public string DateCreated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     public string? DateCompleted { get; set; }
-    public string TargetDuration { get; set; }
+    public string? TargetDuration { get; set; }
     public string CurrentProgress { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormatType);
+    public string? Description { get; set; }
     public bool IsCompleted { get; set; }
+
+    public CodingGoalModel() { }
 
     public enum GoalProperties
     {
@@ -18,17 +22,20 @@ public class CodingGoalModel
         DateCompleted,
         TargetDuration,
         CurrentProgress,
+        Description,
         IsCompleted
     }
 
     public enum EditableProperties
     {
-        TargetDuration
+        TargetDuration,
+        Description
     }
 
-    public CodingGoalModel(TimeSpan targetDuration) 
+    public CodingGoalModel(TimeSpan targetDuration, string description) 
     {
         TargetDuration = targetDuration.ToString(ConfigSettings.TimeFormatType);
+        Description = description;
     }
 
     public void UpdateProgress(TimeSpan sessionDuration)
@@ -40,6 +47,14 @@ public class CodingGoalModel
     public void SetDateCompleted(DateTime date)
     {
         DateCompleted = date.ToString(ConfigSettings.DateFormatLong);
+    }
+
+    public void GetProgressAsIntervals(out int currentMinutes, out int targetMinutes)
+    {
+        var currentDuration = TimeSpan.Parse(CurrentProgress);
+        var targetDuration = TimeSpan.Parse(TargetDuration);
+        currentMinutes = (int)currentDuration.TotalMinutes;
+        targetMinutes = (int)targetDuration.TotalMinutes;
     }
 }
 
