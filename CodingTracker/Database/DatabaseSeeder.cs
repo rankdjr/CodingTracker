@@ -49,15 +49,15 @@ public class DatabaseSeeder
 
         for (int i = 0; i < numOfGoals; i++)
         {
-            TimeSpan duration = new TimeSpan(0, _random.Next(lowerBoundaryGoalDuration.Minutes, upperBoundaryGoalDuration.Minutes), 0);
+            TimeSpan duration = new TimeSpan(0, _random.Next(lowerBoundaryGoalDuration.Minutes, upperBoundaryGoalDuration.Hours * 60), 0);
 
-            CodingGoalModel newGoal = new CodingGoalModel(duration);
+            CodingGoalModel newGoal = new CodingGoalModel(duration, $"Seeded Goal {i}");
             _codingGoalDAO.InsertNewGoal(newGoal);
         }
 
         // Create a master goal with a duration of 10,000 hours
         TimeSpan masterDuration = new TimeSpan(10000, 0, 0);
-        CodingGoalModel masterGoal = new CodingGoalModel(masterDuration);
+        CodingGoalModel masterGoal = new CodingGoalModel(masterDuration, $"10,000 Hours Goal");
         _codingGoalDAO.InsertNewGoal(masterGoal);
     }
 
