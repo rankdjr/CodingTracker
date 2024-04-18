@@ -2,7 +2,6 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Dapper;
-using System.Text;
 
 namespace CodingTracker.DAO;
 
@@ -22,8 +21,8 @@ public class CodingGoalDAO
             using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = @"
-                    INSERT INTO tb_CodingGoals (DateCreated, DateUpdated, TargetDuration, CurrentProgress, IsCompleted)
-                    VALUES (@DateCreated, @DateUpdated, @TargetDuration, @CurrentProgress, @IsCompleted);
+                    INSERT INTO tb_CodingGoals (DateCreated, DateCompleted, TargetDuration, CurrentProgress, Description, IsCompleted)
+                    VALUES (@DateCreated, @DateCompleted, @TargetDuration, @CurrentProgress, @Description,@IsCompleted);
                     SELECT last_insert_rowid();";
 
                 var id = connection.ExecuteScalar<int>(sql, goal);
@@ -71,5 +70,41 @@ public class CodingGoalDAO
             Utilities.DisplayExceptionErrorMessage("Error executing goal query", ex.Message);
             return new List<CodingGoalModel>();  // Return an empty list in case of error
         }
-    }   
+    }
+    
+    public bool DeleteGoal(int id)
+    {
+        try
+        {
+            using (var connection = _dbContext.GetNewDatabaseConnection())
+            {
+                string sql = "DELETE FROM tb_CodingGoals WHERE Id = @Id";
+                connection.Execute(sql, new { Id = id });
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.DisplayExceptionErrorMessage("Error deleting goal", ex.Message);
+            return false;
+        }
+    }
+
+    public bool DeleteAllGoals()
+    {
+        try
+        {
+            using (var connection = _dbContext.GetNewDatabaseConnection())
+            {
+                string sql = "DELETE FROM tb_CodingGoals";
+                connection.Execute(sql);
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.DisplayExceptionErrorMessage("Error deleting all goals", ex.Message);
+            return false;
+        }
+    }
 }
