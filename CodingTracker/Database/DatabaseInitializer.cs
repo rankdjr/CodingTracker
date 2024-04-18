@@ -18,6 +18,15 @@ public class DatabaseInitializer
             EndTime TEXT NULL
         )";
 
+    private static readonly string CreateGoalsTable = @"
+        CREATE TABLE IF NOT EXISTS tb_CodingGoals (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            TargetDuration TEXT NOT NULL,
+            CurrentProgress TEXT NOT NULL DEFAULT '00:00:00',
+            IsCompleted BOOLEAN NOT NULL DEFAULT 0
+        )";
+
+
     public DatabaseInitializer(DatabaseContext context)
     {
         _dbContext = context;
