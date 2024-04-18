@@ -44,6 +44,8 @@ public class DatabaseInitializer
                     {
                         var command = new SQLiteCommand(CreateSessionTable, connection, transaction);
                         command.ExecuteNonQuery();
+                        command.CommandText = CreateGoalsTable;
+                        command.ExecuteNonQuery();
                         transaction.Commit();
                     }
                     catch
