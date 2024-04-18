@@ -2,9 +2,6 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Dapper;
-using System.Data.Entity;
-using System.Data.SQLite;
-using System.Data.SqlTypes;
 using System.Text;
 
 namespace CodingTracker.DAO;

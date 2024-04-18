@@ -1,6 +1,6 @@
 ﻿namespace CodingTracker.Models;
 
-public class CodingGoal
+public class CodingGoalModel
 {
     public int Id { get; set; }
     public TimeSpan TargetDuration { get; set; }
