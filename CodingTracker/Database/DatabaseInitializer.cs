@@ -21,8 +21,11 @@ public class DatabaseInitializer
     private static readonly string CreateGoalsTable = @"
         CREATE TABLE IF NOT EXISTS tb_CodingGoals (
             Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            DateCreated TEXT NOT NULL,
+            DateCompleted TEXT NULL,
             TargetDuration TEXT NOT NULL,
             CurrentProgress TEXT NOT NULL DEFAULT '00:00:00',
+            Description TEXT NOT NULL,
             IsCompleted BOOLEAN NOT NULL DEFAULT 0
         )";
 
