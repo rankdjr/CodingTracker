@@ -3,6 +3,8 @@ using CodingTracker.Models;
 using CodingTracker.Services;
 using Dapper;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SQLite;
 
 namespace CodingTracker.DAO;
 
@@ -78,6 +80,27 @@ public class CodingGoalDAO
         {
             Utilities.DisplayExceptionErrorMessage("Error updating goal", ex.Message);
             return false;
+        }
+    }
+
+    public bool UpdateCodingGoal(CodingGoalModel goal, SQLiteConnection connection, SQLiteTransaction transaction)
+    {
+        try
+        {
+            string sql = @"
+                UPDATE tb_CodingGoals
+                SET CurrentProgress = @CurrentProgress,
+                    IsCompleted = @IsCompleted
+                WHERE Id = @Id";
+
+            int rowsAffected = connection.Execute(sql, goal, transaction: transaction);
+            
+            return rowsAffected > 0;
+        }
+        catch (Exception ex)
+        {
+            Utilities.DisplayExceptionErrorMessage($"Error updating coding goal: ", ex.Message);
+            throw;  
         }
     }
 

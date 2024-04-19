@@ -39,6 +39,57 @@ public class CodingSessionDAO
         }
     }
 
+    public bool InsertSessionAndUpdateGoals(CodingSessionModel session)
+    {
+        using (var connection = _dbContext.GetNewDatabaseConnection())
+        {
+            using (var transaction = connection.BeginTransaction())
+            {
+                try
+                {
+                    // Insert the new session
+                    string sessionSql = @"
+                        INSERT INTO tb_CodingSessions (DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
+                        VALUES (@DateCreated, @DateUpdated, @SessionDate, @Duration, @StartTime, @EndTime);
+                        SELECT last_insert_rowid();";
+
+                    int newRecordID = connection.ExecuteScalar<int>(sessionSql, session, transaction: transaction);
+                    if (newRecordID <= 0)
+                    {
+                        transaction.Rollback();
+                        return false;
+                    }
+
+                    // Update the goals based on the new session's duration
+                    var goals = _codingGoalDAO.GetInProgressCodingGoals();
+                    foreach (var goal in goals)
+                    {
+                        
+                        if (DateTime.Parse(goal.DateCreated) > DateTime.Parse(session.SessionDate))
+                            continue;
+
+                        goal.UpdateProgress(TimeSpan.Parse(session.Duration));
+                        if (!_codingGoalDAO.UpdateCodingGoal(goal, connection, transaction))
+                        {
+                            transaction.Rollback();
+                            return false;
+                        }
+                    }
+
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();  // Roll back on any error
+                    Utilities.DisplayExceptionErrorMessage("Transaction failed: ", ex.Message);
+                    return false;
+                }
+            }
+        }
+    }
+
+
     public List<CodingSessionModel> GetAllSessionRecords()
     {
         try

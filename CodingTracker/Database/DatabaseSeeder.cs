@@ -2,6 +2,8 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
+using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
+using System;
 
 namespace CodingTracker.Database;
 
@@ -36,28 +38,32 @@ public class DatabaseSeeder
 
             CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
 
-            // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
-
-            _codingSessionDAO.InsertNewSession(newSession);
+            _codingSessionDAO.InsertSessionAndUpdateGoals(newSession);
         }
     }
 
     public void SeedGoals(int numOfGoals)
     {
+        DateTime currentDateTime = DateTime.UtcNow;
         TimeSpan lowerBoundaryGoalDuration = new TimeSpan(0, 30, 0); // 30 minutes lower boundary for duration
         TimeSpan upperBoundaryGoalDuration = new TimeSpan(100, 0, 0); // 100 hour upper boundary for duration
+
+        int daysBack = _random.Next(0, 30);
+        DateTime randomDatePast30Days = currentDateTime.AddDays(-daysBack);
 
         for (int i = 0; i < numOfGoals; i++)
         {
             TimeSpan duration = new TimeSpan(0, _random.Next(lowerBoundaryGoalDuration.Minutes, upperBoundaryGoalDuration.Hours * 60), 0);
 
             CodingGoalModel newGoal = new CodingGoalModel(duration, $"Seeded Goal {i}");
+            newGoal.DateCreated = randomDatePast30Days.ToString(ConfigSettings.DateFormatLong);
             _codingGoalDAO.InsertNewGoal(newGoal);
         }
 
         // Create a master goal with a duration of 10,000 hours
         TimeSpan masterDuration = new TimeSpan(10000, 0, 0);
         CodingGoalModel masterGoal = new CodingGoalModel(masterDuration, $"10,000 Hours Goal");
+        masterGoal.DateCreated = currentDateTime.AddDays(-365).ToString(ConfigSettings.DateFormatLong);
         _codingGoalDAO.InsertNewGoal(masterGoal);
     }
 

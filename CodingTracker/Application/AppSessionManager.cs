@@ -123,8 +123,6 @@ public class AppSessionManager
         
         if (AnsiConsole.Confirm($"Are you sure you want to delete this log entry (ID: {sessionEntrySelection.Id})?"))
         {
-            // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
-
             if (_codingSessionDAO.DeleteSessionRecord(sessionEntrySelection.Id!.Value))
             {
                 Utilities.DisplaySuccessMessage("Log entry successfully deleted!");
@@ -144,8 +142,6 @@ public class AppSessionManager
 
     private void DeleteAllSession()
     {
-        // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
-
         if (_codingSessionDAO.DeleteAllSessions())
         {
             Utilities.DisplaySuccessMessage("All sessions have been successfully deleted!");

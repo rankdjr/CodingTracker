@@ -58,12 +58,10 @@ public class AppNewLogManager
         // Create new coding session object via constructor (duration automatically calculated)
         CodingSessionModel newSession = new CodingSessionModel(startTime, endTime);
 
-        // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
-
-        int newRecordID = _codingSessionDAO.InsertNewSession(newSession);
-        if (newRecordID != -1)
+        bool success = _codingSessionDAO.InsertSessionAndUpdateGoals(newSession);
+        if (success)
         {
-            string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
+            string successMessage = $"[green]Session successfully logged![/]";
             Utilities.DisplaySuccessMessage(successMessage);
         }
         else

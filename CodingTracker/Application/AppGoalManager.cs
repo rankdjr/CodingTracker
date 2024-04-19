@@ -124,12 +124,6 @@ public class AppGoalManager
 
             goal.GetProgressAsIntervals(out hoursCurrentProgress, out hoursTarget);
 
-            // TODO: Remove after testing
-            Random random = new Random();
-            goal.UpdateProgress(TimeSpan.FromMinutes(random.Next(1, (int)hoursTarget*60 + 15)));
-            goal.GetProgressAsIntervals(out hoursCurrentProgress, out hoursTarget);
-            // end test code
-
             BreakdownChart breakdownChart = new BreakdownChart()
                                 .Width((int)(Console.WindowWidth * 0.65))
                                 .AddItem("Current (hrs): ", hoursCurrentProgress, progressBarColor)

@@ -159,9 +159,7 @@ public class AppStopwatchManager
         {
             UpdateSessionEndValueAttributes();
 
-            // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
-
-            _codingSessionDAO.InsertNewSession(_sessionModel!);
+            _codingSessionDAO.InsertSessionAndUpdateGoals(_sessionModel!);
         }
         catch (Exception ex)
         {
