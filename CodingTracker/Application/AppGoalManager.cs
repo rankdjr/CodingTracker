@@ -3,6 +3,7 @@ using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
 using System.Data;
+using System.Xml.Serialization;
 
 namespace CodingTracker.Application;
 
@@ -48,7 +49,7 @@ public class AppGoalManager
                 HandleShowProgressAction();
                 break;
             case ManageGoalsMenuOptions.SetNewGoal:
-                // do stuff
+                HandleSetNewGoalAction();
                 break;
             case ManageGoalsMenuOptions.DeleteGoal:
                 DeleteSpecificGoal();
@@ -70,7 +71,7 @@ public class AppGoalManager
 
     private void ShowGoalProgress()
     {
-        List<CodingGoalModel> codingGoals = _codingGoalDAO.GetAllGoalRecords();
+        List<CodingGoalModel> codingGoals = _codingGoalDAO.GetInProgressCodingGoals();
 
         if (codingGoals.Count == 0)
         {
@@ -78,59 +79,64 @@ public class AppGoalManager
             return;
         }
 
-        List<(BreakdownChart, string)> breakdownCharts = BuildCodingGoalsBreakdownCharts(codingGoals);
+        List<(BreakdownChart, CodingGoalModel)> breakdownCharts = BuildCodingGoalsBreakdownCharts(codingGoals);
         PrintBreakDownCharts(breakdownCharts);
     }
 
-    private void PrintBreakDownCharts(List<(BreakdownChart, string)> charts)
+    private void PrintBreakDownCharts(List<(BreakdownChart, CodingGoalModel)> charts)
     {
         AnsiConsole.MarkupLine("[bold]Coding Goals in Progress[/]");
         Utilities.PrintNewLines(2);
 
         foreach (var chart in charts)
         {
-            string chartHeader = $"[darkslategray2]  {chart.Item2}  [/]";
+            string chartHeader = $"[darkslategray2]  {chart.Item2.Description}  [/]";
+            float hoursCurrentProgress, hoursTarget;
+            chart.Item2.GetProgressAsIntervals(out hoursCurrentProgress, out hoursTarget);
+            string footerText = $"[dim]Current: [lightgreen_1]{hoursCurrentProgress.ToString("F2")}[/] hrs, Target: [yellow]{hoursTarget.ToString("F2")}[/] hrs[/]";
 
-            var panel = new Panel(chart.Item1)
+            var panelProgessBar = new Panel(chart.Item1)
                 .Header(chartHeader)
                 .HeaderAlignment(Justify.Left)
-                .BorderColor(Color.Grey);
+                .BorderColor(Color.Grey)
+                .Padding(1, 1, 1, 1);
 
-            AnsiConsole.Write(panel);
-            Utilities.PrintNewLines(1);
+            AnsiConsole.Write(panelProgessBar);
+            AnsiConsole.MarkupLine(footerText);
+            Utilities.PrintNewLines(2);
 
         }
 
         Utilities.PrintNewLines(2);
     }
 
-    private List<(BreakdownChart, string)> BuildCodingGoalsBreakdownCharts(List<CodingGoalModel> codingGoals)
+    private List<(BreakdownChart, CodingGoalModel)> BuildCodingGoalsBreakdownCharts(List<CodingGoalModel> codingGoals)
     {
-        List<(BreakdownChart, string)> breakdownCharts = new List<(BreakdownChart, string)>();
+        List<(BreakdownChart, CodingGoalModel)> breakdownCharts = new List<(BreakdownChart, CodingGoalModel)>();
 
         foreach (var goal in codingGoals)
         {
-            string goalDescription = goal.Description!;
             Color progressBarColor = Color.LightGreen;
             Color targetDurationBarColor = Color.Grey;
 
-            int progressValue;
-            int totalMinutesTarget;
+            float hoursCurrentProgress;
+            float hoursTarget;
 
-            goal.GetProgressAsIntervals(out progressValue, out totalMinutesTarget);
+            goal.GetProgressAsIntervals(out hoursCurrentProgress, out hoursTarget);
 
             // TODO: Remove after testing
             Random random = new Random();
-            goal.UpdateProgress(TimeSpan.FromMinutes(random.Next(1, totalMinutesTarget)));
-            goal.GetProgressAsIntervals(out progressValue, out totalMinutesTarget);
+            goal.UpdateProgress(TimeSpan.FromMinutes(random.Next(1, (int)hoursTarget*60 + 15)));
+            goal.GetProgressAsIntervals(out hoursCurrentProgress, out hoursTarget);
             // end test code
 
             BreakdownChart breakdownChart = new BreakdownChart()
                                 .Width((int)(Console.WindowWidth * 0.65))
-                                .AddItem("", progressValue, progressBarColor)
-                                .AddItem("", totalMinutesTarget, targetDurationBarColor);
+                                .AddItem("Current (hrs): ", hoursCurrentProgress, progressBarColor)
+                                .AddItem("Target (hrs): ", hoursTarget- hoursCurrentProgress, targetDurationBarColor)
+                                .ShowTags(false);
 
-            breakdownCharts.Add(new (breakdownChart, goal.Description!));
+            breakdownCharts.Add(new (breakdownChart, goal));
         }
 
         return breakdownCharts;
@@ -161,9 +167,42 @@ public class AppGoalManager
         _inputHandler.PauseForContinueInput();
     }
 
-    private void SetNewGoal()
-    {
 
+    private void HandleSetNewGoalAction()
+    {
+        CodingGoalModel goalToInsert = CreateNewGoal();
+        InsertNewGoal(goalToInsert);
+        _inputHandler.PauseForContinueInput();
+    }
+
+    private void InsertNewGoal(CodingGoalModel goalToInsert)
+    {
+        int newRecordID = _codingGoalDAO.InsertNewGoal(goalToInsert);
+        if (newRecordID != -1)
+        {
+            string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
+            Utilities.DisplaySuccessMessage(successMessage);
+        }
+        else
+        {
+            Utilities.DisplayWarningMessage("Failed to log the session. Please try again or check the system logs.");
+        }
+    }   
+
+    private (string, TimeSpan) PromptForGoalProperties()
+    {
+        string goalDescription = _inputHandler.PromptForGoalDescription("Enter a description for your goal: ");
+        int hours = _inputHandler.PromptForPositiveInteger("Enter the number of hours for your goal: ");
+        TimeSpan targetDuration = TimeSpan.FromHours(hours);
+
+        return (goalDescription, targetDuration);
+    }
+
+    private CodingGoalModel CreateNewGoal()
+    {
+        (string description, TimeSpan targetDuration) = PromptForGoalProperties();
+
+        return new CodingGoalModel(targetDuration, description);
     }
 
     private void DeleteAllGoals()

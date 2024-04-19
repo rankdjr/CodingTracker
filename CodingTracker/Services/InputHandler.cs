@@ -241,6 +241,20 @@ public class InputHandler
                 .AddChoices(codingGoals));
     }
 
+    public string PromptForGoalDescription(string promptMessage)
+    {
+        return AnsiConsole.Prompt(
+            new TextPrompt<string>(promptMessage)
+            .PromptStyle("yellow")
+                .Validate(input =>
+                {
+                    if (string.IsNullOrWhiteSpace(input))
+                        return ValidationResult.Error("[red]Goal description cannot be empty.[/]");
+                
+                    return ValidationResult.Success();
+                }));
+    } 
+
     public void PauseForContinueInput()
     {
         AnsiConsole.WriteLine("Press any key to continue...");

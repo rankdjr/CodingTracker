@@ -56,12 +56,12 @@ public class CodingGoalModel
         DateCompleted = date.ToString(ConfigSettings.DateFormatLong);
     }
 
-    public void GetProgressAsIntervals(out int currentMinutes, out int targetMinutes)
+    public void GetProgressAsIntervals(out float currentProgress, out float targetHours)
     {
         var currentDuration = TimeSpan.Parse(CurrentProgress);
         var targetDuration = TimeSpan.Parse(TargetDuration!);
-        currentMinutes = (int)currentDuration.TotalMinutes;
-        targetMinutes = (int)targetDuration.TotalMinutes;
+        currentProgress = (float)currentDuration.TotalHours;
+        targetHours = (float)targetDuration.TotalHours;
     }
 }
 
