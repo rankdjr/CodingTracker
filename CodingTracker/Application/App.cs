@@ -39,12 +39,12 @@ public class App
         while (_running)
         {
             AnsiConsole.Clear();
-            displayMainScreenBanner();
+            DisplayMainScreenBanner();
             PromptForSessionAction();            
         }
     }
 
-    private void displayMainScreenBanner()
+    private void DisplayMainScreenBanner()
     {
         AnsiConsole.Write(
             new FigletText("Coding Tracker")
@@ -94,12 +94,12 @@ public class App
                 _dbSeeder.SeedDatabase();
                 break;
             case MainMenuOption.Exit:
-                closeSession();
+                CloseSession();
                 break;
         }
     }
 
-    private void closeSession()
+    private void CloseSession()
     {
         _running = false;
         AnsiConsole.Markup("[teal]Goodbye![/]");
