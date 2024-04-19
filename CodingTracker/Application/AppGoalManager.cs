@@ -2,6 +2,8 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
+using System.Data;
+using System.Reflection.PortableExecutable;
 
 namespace CodingTracker.Application;
 
@@ -74,32 +76,32 @@ public class AppGoalManager
     private void ShowGoalProgress()
     {
         List<CodingGoalModel> codingGoals = _codingGoalDAO.GetAllGoalRecords();
-        List<BreakdownChart> breakdownCharts = BuildCodingGoalsBreakdownCharts(codingGoals);
+        List<(BreakdownChart, string)> breakdownCharts = BuildCodingGoalsBreakdownCharts(codingGoals);
         PrintBreakDownCharts(breakdownCharts);
     }
 
-    private void PrintBreakDownCharts(List<BreakdownChart> charts)
+    private void PrintBreakDownCharts(List<(BreakdownChart, string)> charts)
     {
         Utilities.PrintNewLines(1);
-        // TODO: Implement header for screen
 
         foreach (var chart in charts)
         {
-            string chartHeader = $"Goal Progress: {_codingGoalModel?.Description}"; // TODO: Fix this --> build tuple in breakdownchart function with description and chart
-            var rule = new Rule("[red]Hello[/]");
-            AnsiConsole.Write(rule);
-            Utilities.PrintNewLines(1);
-            AnsiConsole.Write(chart);
-            Utilities.PrintNewLines(3);
+            string chartHeader = $"[darkslategray2]  {chart.Item2}  [/]";
+
+            var panel = new Panel(chart.Item1)
+                .Header(chartHeader)
+                .HeaderAlignment(Justify.Left)
+                .BorderColor(Color.Grey);
+
+            AnsiConsole.Write(panel);
         }
 
         Utilities.PrintNewLines(2);
     }
 
-    // TODO: implement --> build tuple in breakdownchart function with description and chart
-    private List<BreakdownChart> BuildCodingGoalsBreakdownCharts(List<CodingGoalModel> codingGoals)
+    private List<(BreakdownChart, string)> BuildCodingGoalsBreakdownCharts(List<CodingGoalModel> codingGoals)
     {
-        List<BreakdownChart> breakdownCharts = new List<BreakdownChart>();
+        List<(BreakdownChart, string)> breakdownCharts = new List<(BreakdownChart, string)>();
 
         foreach (var goal in codingGoals)
         {
@@ -123,7 +125,7 @@ public class AppGoalManager
                                 .AddItem("", progressValue, progressBarColor)
                                 .AddItem("", totalMinutesTarget, targetDurationBarColor);
 
-            breakdownCharts.Add(breakdownChart);
+            breakdownCharts.Add(new (breakdownChart, goal.Description!));
         }
 
         return breakdownCharts;
