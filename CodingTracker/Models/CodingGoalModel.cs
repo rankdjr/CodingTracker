@@ -15,23 +15,6 @@ public class CodingGoalModel
 
     public CodingGoalModel() { }
 
-    public enum GoalProperties
-    {
-        Id,
-        DateCreated,
-        DateCompleted,
-        TargetDuration,
-        CurrentProgress,
-        Description,
-        IsCompleted
-    }
-
-    public enum EditableProperties
-    {
-        TargetDuration,
-        Description
-    }
-
     public CodingGoalModel(TimeSpan targetDuration, string description) 
     {
         TargetDuration = targetDuration.ToString(ConfigSettings.TimeFormatType);
@@ -49,11 +32,6 @@ public class CodingGoalModel
             DateCompleted = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
         }
         
-    }
-
-    public void SetDateCompleted(DateTime date)
-    {
-        DateCompleted = date.ToString(ConfigSettings.DateFormatLong);
     }
 
     public void GetProgressAsIntervals(out float currentProgress, out float targetHours)

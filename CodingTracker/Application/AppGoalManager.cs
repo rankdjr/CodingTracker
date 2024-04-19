@@ -174,7 +174,7 @@ public class AppGoalManager
         int newRecordID = _codingGoalDAO.InsertNewGoal(goalToInsert);
         if (newRecordID != -1)
         {
-            string successMessage = $"[green]Session successfully logged with SessionId [[ {newRecordID} ]]![/]";
+            string successMessage = $"[green]Session successfully logged with Id [[ {newRecordID} ]]![/]";
             Utilities.DisplaySuccessMessage(successMessage);
         }
         else

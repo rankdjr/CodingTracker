@@ -17,28 +17,6 @@ public class CodingSessionDAO
         _codingGoalDAO = codingGoalDAO;
     }
 
-    public int InsertNewSession(CodingSessionModel session)
-    {
-        try
-        {
-            using (var connection = _dbContext.GetNewDatabaseConnection())
-            {
-                string sql = @"
-                    INSERT INTO tb_CodingSessions (DateCreated, DateUpdated, SessionDate, Duration, StartTime, EndTime)
-                    VALUES (@DateCreated, @DateUpdated, @SessionDate, @Duration, @StartTime, @EndTime);
-                    SELECT last_insert_rowid();";
-
-                var id = connection.ExecuteScalar<int>(sql, session);
-                return id;  // Returns the auto-incremented Id
-            }
-        }
-        catch (Exception ex)
-        {
-            Utilities.DisplayExceptionErrorMessage("Error inserting new session.", ex.Message);
-            return -1;  // Indicate failure
-        }
-    }
-
     public bool InsertSessionAndUpdateGoals(CodingSessionModel session)
     {
         using (var connection = _dbContext.GetNewDatabaseConnection())
@@ -178,42 +156,6 @@ public class CodingSessionDAO
         catch (Exception ex)
         {
             Utilities.DisplayExceptionErrorMessage($"Error deleting session with ID {sessionId}", ex.Message);
-            return false;
-        }
-    }
-
-    public bool UpdateSession(CodingSessionModel session)
-    {
-        try
-        {
-            using (var connection = _dbContext.GetNewDatabaseConnection())
-            {
-                string sql = @"
-                UPDATE tb_CodingSessions
-                SET
-                    DateUpdated = @DateUpdated,
-                    SessionDate = @SessionDate,
-                    Duration = @Duration,
-                    StartTime = @StartTime,
-                    EndTime = @EndTime
-                WHERE Id = @Id;";
-
-                int rowsAffected = connection.Execute(sql, new
-                {
-                    DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong),
-                    session.SessionDate,
-                    session.Duration,
-                    session.StartTime,
-                    session.EndTime,
-                    session.Id
-                });
-
-                return rowsAffected > 0;
-            }
-        }
-        catch (Exception ex)
-        {
-            Utilities.DisplayExceptionErrorMessage($"Error updating session with ID {session.Id}.", ex.Message);
             return false;
         }
     }

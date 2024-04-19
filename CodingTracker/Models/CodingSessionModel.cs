@@ -50,19 +50,6 @@ public class CodingSessionModel
         DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     }
 
-    public void SetSessionDate(DateTime date)
-    {
-        SessionDate = date.ToString(ConfigSettings.DateFormatShort);
-        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
-    }
-
-    public void SetStartTime(DateTime date)
-    {
-        StartTime = date.ToString(ConfigSettings.DateFormatLong);
-        SetDuration(date, DateTime.Parse(EndTime));
-        DateUpdated = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
-    }
-
     public void SetEndTime(DateTime date)
     {
         EndTime = date.ToString(ConfigSettings.DateFormatLong);

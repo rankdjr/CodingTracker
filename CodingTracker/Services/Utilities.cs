@@ -6,18 +6,6 @@ namespace CodingTracker.Services;
 
 public static class Utilities
 {
-    public static void AnsiWriteLine(Markup message)
-    {
-        AnsiConsole.Write(message);
-        Console.WriteLine();
-    }
-
-    public static T FromFriendlyString<T>(string friendlyString) where T : struct, Enum
-    {
-        string enumString = friendlyString.Replace(" ", "");
-        return Enum.Parse<T>(enumString, true);
-    }
-
     public static string SplitCamelCase(string input)
     {
         return Regex.Replace(input, "([a-z])([A-Z])", "$1 $2");
@@ -35,6 +23,7 @@ public static class Utilities
         AnsiConsole.MarkupLine(errorMessage);
         PrintNewLines(1);
     }
+
     public static void DisplaySuccessMessage(string message)
     {
         PrintNewLines(1);
@@ -42,6 +31,7 @@ public static class Utilities
         AnsiConsole.MarkupLine(successMessage);
         PrintNewLines(1);
     }
+
     public static void DisplayWarningMessage(string message)
     {
         PrintNewLines(1);
@@ -57,6 +47,7 @@ public static class Utilities
         AnsiConsole.MarkupLine(successMessage);
         PrintNewLines(1);
     }
+
     public static void DisplayCurrentQuerySelections(List<(CodingSessionModel.EditableProperties column, SortDirection? direction, int? rank)> orderByProperties, Color[] colors)
     {
         var table = new Table();
@@ -72,7 +63,6 @@ public static class Utilities
             table.AddRow(columnName, direction?.ToString() ?? "Not Set", rank?.ToString() ?? "Not Set");
         }
 
-        // Clear the previous output before displaying the updated table
         AnsiConsole.Clear();
         AnsiConsole.Write(table);
         PrintNewLines(2);

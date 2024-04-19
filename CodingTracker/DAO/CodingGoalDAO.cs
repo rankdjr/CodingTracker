@@ -57,32 +57,6 @@ public class CodingGoalDAO
         }
     }
 
-    public bool UpdateCodingGoal(CodingGoalModel goal)
-    {
-        try
-        {
-            using (var connection = _dbContext.GetNewDatabaseConnection())
-            {
-                string sql = @"
-                    UPDATE tb_CodingGoals
-                    SET DateCompleted = @DateCompleted,
-                        TargetDuration = @TargetDuration,
-                        CurrentProgress = @CurrentProgress,
-                        Description = @Description,
-                        IsCompleted = @IsCompleted
-                    WHERE Id = @Id";
-
-                connection.Execute(sql, goal);
-                return true;
-            }
-        }
-        catch (Exception ex)
-        {
-            Utilities.DisplayExceptionErrorMessage("Error updating goal", ex.Message);
-            return false;
-        }
-    }
-
     public bool UpdateCodingGoal(CodingGoalModel goal, SQLiteConnection connection, SQLiteTransaction transaction)
     {
         try
@@ -121,24 +95,6 @@ public class CodingGoalDAO
             return new List<CodingGoalModel>();  // Return an empty list in case of error
         }
     }   
-
-    public List<CodingGoalModel> ExecuetGetGoalsQuery(string sqlstring)
-    {
-        try
-        {
-            using (var connection = _dbContext.GetNewDatabaseConnection())
-            {
-                string sql = sqlstring;
-                var goals = connection.Query<CodingGoalModel>(sql).ToList();
-                return goals;
-            }
-        }
-        catch (Exception ex)
-        {
-            Utilities.DisplayExceptionErrorMessage("Error executing goal query", ex.Message);
-            return new List<CodingGoalModel>();  // Return an empty list in case of error
-        }
-    }
     
     public bool DeleteGoal(int id)
     {
