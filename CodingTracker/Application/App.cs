@@ -16,7 +16,7 @@ public class App
     private CodingSessionDao _codingSessionDAO;
     private CodingGoalDao _codingGoalDAO;
     private InputHandler _inputHandler;
-    private bool _running = false;
+    private bool _running;
 
     public App()
     {
