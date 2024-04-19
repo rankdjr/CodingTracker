@@ -34,8 +34,8 @@ public class App
 
         // Initialize services
         _inputHandler = new InputHandler();
-        _codingSessionDAO = new CodingSessionDAO(_dbContext);
         _codingGoalDAO = new CodingGoalDAO(_dbContext);
+        _codingSessionDAO = new CodingSessionDAO(_dbContext, _codingGoalDAO);
         _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _codingGoalDAO,_inputHandler);
 
         // Setup child applications

@@ -3,7 +3,6 @@ using CodingTracker.Models;
 using CodingTracker.Services;
 using Spectre.Console;
 using System.Data;
-using System.Reflection.PortableExecutable;
 
 namespace CodingTracker.Application;
 
@@ -11,7 +10,6 @@ public class AppGoalManager
 {
     private InputHandler _inputHandler;
     CodingGoalDAO _codingGoalDAO;
-    private CodingGoalModel? _codingGoalModel;
     private bool _running;
 
     public AppGoalManager(CodingGoalDAO codingGoalDAO, InputHandler inputHandler)
