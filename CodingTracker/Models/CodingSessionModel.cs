@@ -10,8 +10,8 @@ public class CodingSessionModel
     public string DateUpdated { get; set; } = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
     public string SessionDate { get; set; }= DateTime.UtcNow.ToString(ConfigSettings.DateFormatShort);
     public string Duration { get; set; } = TimeSpan.Zero.ToString(ConfigSettings.TimeFormatType);
-    public string StartTime { get; set; }
-    public string EndTime { get; set; }
+    public string? StartTime { get; set; }
+    public string? EndTime { get; set; }
 
     public enum SessionProperties
     {
@@ -30,6 +30,8 @@ public class CodingSessionModel
         StartTime,
         EndTime
     }
+
+    public CodingSessionModel() { }
 
     public CodingSessionModel(DateTime startTime, DateTime endTime)
     {

@@ -19,14 +19,13 @@ public enum StartSessionMenuOptions
 
 public enum LogManualSessionMenuOptions
 {
-    LogSessionManualSession,
+    LogManualExternalSession,
     ReturnToMainMenu
 }
 
 public enum ManageSessionsMenuOptions
 {
     ViewAllSessions,
-    UpdateSessionRecord,
     DeleteSessionRecord,
     DeleteAllSessions,
     ReturnToMainMenu

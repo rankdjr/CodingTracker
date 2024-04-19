@@ -33,9 +33,6 @@ public class AppSessionManager
                 case ManageSessionsMenuOptions.ViewAllSessions:
                     ViewSessions();
                     break;
-                case ManageSessionsMenuOptions.UpdateSessionRecord:
-                    EditSession();
-                    break;
                 case ManageSessionsMenuOptions.DeleteSessionRecord:
                     DeleteSession();
                     break;
@@ -101,73 +98,14 @@ public class AppSessionManager
                 session.Id.ToString()!,
                 session.SessionDate,
                 session.Duration,
-                session.StartTime,
-                session.EndTime,
+                session.StartTime!,
+                session.EndTime!,
                 session.DateCreated,
                 session.DateUpdated
             );
         }
 
         return table;
-    }
-
-    private void EditSession()
-    {
-        List<CodingSessionModel> sessionLogs = _codingSessionDAO.GetAllSessionRecords();
-        if (!sessionLogs.Any())
-        {
-            Utilities.DisplayWarningMessage("No log entries available to edit.");
-            _inputHandler.PauseForContinueInput();
-            return;
-        }
-
-        CodingSessionModel sessionEntrySelection = _inputHandler.PromptForSessionListSelection(
-            sessionLogs, "[yellow]Which log entry would you like to edit?[/]");
-
-        string promptMessage = "Select properties you want to edit:";
-        List<CodingSessionModel.EditableProperties> propertiesToEdit = _inputHandler.PromptForSessionPropertiesSelection(promptMessage);
-
-        if (!propertiesToEdit.Any()) 
-        {
-            Utilities.DisplayCancellationMessage("Update cancelled!");
-            _inputHandler.PauseForContinueInput();
-            return;
-        }
-
-        foreach (var property in propertiesToEdit)
-        {
-            DateTime newDate;
-
-            switch (property)
-            {
-                case CodingSessionModel.EditableProperties.SessionDate:
-                    newDate = _inputHandler.PromptForDate($"Enter the SessionDate for log entry {ConfigSettings.DateFormatShort}:", DatePrompt.Short);
-                    sessionEntrySelection.SetSessionDate(newDate);
-                    break;
-                case CodingSessionModel.EditableProperties.StartTime:
-                    newDate = _inputHandler.PromptForDate($"Enter new StartTime for log entry {ConfigSettings.DateFormatLong}:", DatePrompt.Long);
-                    sessionEntrySelection.SetStartTime(newDate);
-                    break;
-                case CodingSessionModel.EditableProperties.EndTime:
-                    newDate = _inputHandler.PromptForDate($"Enter the EndTime for log entry {ConfigSettings.DateFormatLong}:", DatePrompt.Long);
-                    sessionEntrySelection.SetStartTime(newDate);
-                    break;
-            }
-        }
-
-        // TODO: Implement CodingActivityManager to insert session activities and update goal progress; return boolean instead of ID
-
-        if (_codingSessionDAO.UpdateSession(sessionEntrySelection))
-        {
-            Utilities.DisplaySuccessMessage("Coding session successfully updated!");
-        }
-        else
-        {
-            Utilities.DisplayWarningMessage("No Coding sessions were updated.");
-        }
-
-
-        _inputHandler.PauseForContinueInput();
     }
 
     private void DeleteSession()

@@ -11,11 +11,6 @@ namespace CodingTracker.Application;
 /// </summary>
 public class App
 {
-    private AppStopwatchManager _appStopwatchManager;
-    private AppNewLogManager _newLogManager;
-    private AppSessionManager _sessionManager;
-    private AppGoalManager _goalManager;
-    private AppReportManager _reportManager;
     private DatabaseContext _dbContext;
     private DatabaseSeeder _dbSeeder;
     private CodingSessionDAO _codingSessionDAO;
@@ -37,13 +32,6 @@ public class App
         _codingGoalDAO = new CodingGoalDAO(_dbContext);
         _codingSessionDAO = new CodingSessionDAO(_dbContext, _codingGoalDAO);
         _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _codingGoalDAO,_inputHandler);
-
-        // Setup child applications
-        _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO, _inputHandler);
-        _newLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
-        _sessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
-        _goalManager = new AppGoalManager(_codingGoalDAO, _inputHandler);  
-        _reportManager = new AppReportManager(_codingSessionDAO, _inputHandler);
     }
 
     public void Run()
@@ -83,19 +71,24 @@ public class App
         switch (Enum.Parse<MainMenuOption>(option.Replace(" ", "")))
         {
             case MainMenuOption.StartNewSession:
+                AppStopwatchManager _appStopwatchManager = new AppStopwatchManager(_codingSessionDAO, _inputHandler);
                 _appStopwatchManager.Run();
                 break;
             case MainMenuOption.LogManualSession:
-                _newLogManager.Run();
+                AppNewLogManager _appNewLogManager = new AppNewLogManager(_codingSessionDAO, _inputHandler);
+                _appNewLogManager.Run();
                 break;
             case MainMenuOption.ViewAndEditPreviousSessions:
-                _sessionManager.Run();
+                AppSessionManager _appSessionManager = new AppSessionManager(_codingSessionDAO, _inputHandler);
+                _appSessionManager.Run();
                 break;
             case MainMenuOption.ViewAndEditGoals:
-                _goalManager.Run();
+                AppGoalManager _appGoalManager = new AppGoalManager(_codingGoalDAO, _inputHandler);
+                _appGoalManager.Run();
                 break;
             case MainMenuOption.ViewReports:
-                _reportManager.Run();
+                AppReportManager _appReportManager = new AppReportManager(_codingSessionDAO, _inputHandler);
+                _appReportManager.Run();
                 break;
             case MainMenuOption.SeedDatabase:
                 _dbSeeder.SeedDatabase();

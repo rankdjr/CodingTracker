@@ -136,7 +136,7 @@ public class AppStopwatchManager
     private void BuildNewPanel(string panelInformation)
     {
         _sessionPanel = new Panel(new Markup(panelInformation));
-        _sessionPanel.Header = new PanelHeader("[mediumspringgreen]Session Running[/]", Justify.Center);
+        _sessionPanel.Header = new PanelHeader("[mediumspringgreen]  Session Running  [/]", Justify.Center);
         _sessionPanel.Padding = new Padding(2, 2, 2, 2);
         _sessionPanel.Border = BoxBorder.Rounded;
         _sessionPanel.Expand = true;

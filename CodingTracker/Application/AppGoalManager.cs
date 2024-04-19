@@ -71,13 +71,21 @@ public class AppGoalManager
     private void ShowGoalProgress()
     {
         List<CodingGoalModel> codingGoals = _codingGoalDAO.GetAllGoalRecords();
+
+        if (codingGoals.Count == 0)
+        {
+            Utilities.DisplayWarningMessage("No current goals in progress.");
+            return;
+        }
+
         List<(BreakdownChart, string)> breakdownCharts = BuildCodingGoalsBreakdownCharts(codingGoals);
         PrintBreakDownCharts(breakdownCharts);
     }
 
     private void PrintBreakDownCharts(List<(BreakdownChart, string)> charts)
     {
-        Utilities.PrintNewLines(1);
+        AnsiConsole.MarkupLine("[bold]Coding Goals in Progress[/]");
+        Utilities.PrintNewLines(2);
 
         foreach (var chart in charts)
         {
@@ -89,6 +97,8 @@ public class AppGoalManager
                 .BorderColor(Color.Grey);
 
             AnsiConsole.Write(panel);
+            Utilities.PrintNewLines(1);
+
         }
 
         Utilities.PrintNewLines(2);

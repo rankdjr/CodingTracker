@@ -30,7 +30,7 @@ public class AppNewLogManager
 
             switch (Enum.Parse<LogManualSessionMenuOptions>(option.Replace(" ", "")))
             {
-                case LogManualSessionMenuOptions.LogSessionManualSession:
+                case LogManualSessionMenuOptions.LogManualExternalSession:
                     LogSessionByStartEndTimes();
                     break;
                 case LogManualSessionMenuOptions.ReturnToMainMenu:

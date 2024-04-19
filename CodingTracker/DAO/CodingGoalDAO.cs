@@ -142,8 +142,8 @@ public class CodingGoalDAO
             using (var connection = _dbContext.GetNewDatabaseConnection())
             {
                 string sql = "DELETE FROM tb_CodingGoals";
-                connection.Execute(sql);
-                return true;
+                int result = connection.Execute(sql);
+                return result > 0;
             }
         }
         catch (Exception ex)
