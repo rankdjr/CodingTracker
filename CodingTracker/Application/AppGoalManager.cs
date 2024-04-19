@@ -52,11 +52,8 @@ public class AppGoalManager
             case ManageGoalsMenuOptions.SetNewGoal:
                 // do stuff
                 break;
-            case ManageGoalsMenuOptions.EditExistingGoal:
-                // do stuff
-                break;
             case ManageGoalsMenuOptions.DeleteGoal:
-                // do stuff
+                DeleteSpecificGoal();
                 break;
             case ManageGoalsMenuOptions.DeleteAllGoals:
                 DeleteAllGoals();
@@ -129,6 +126,36 @@ public class AppGoalManager
         }
 
         return breakdownCharts;
+    }
+
+    private void DeleteSpecificGoal()
+    {
+        List<CodingGoalModel> codingGoals = _codingGoalDAO.GetAllGoalRecords();
+        if (codingGoals.Count == 0)
+        {
+            Utilities.DisplayWarningMessage("No goals found!");
+            _inputHandler.PauseForContinueInput();
+            return;
+        }
+
+        var selectedGoal = _inputHandler.PromptForGoalSelection(codingGoals, "Select a goal to delete:");
+
+        bool goalDeletedResult = _codingGoalDAO.DeleteGoal(selectedGoal.Id);
+        if (goalDeletedResult == true)
+        {
+            Utilities.DisplaySuccessMessage("Goal successfully deleted!");
+        }
+        else
+        {
+            Utilities.DisplayWarningMessage("Goal was not deleted.");
+        }
+
+        _inputHandler.PauseForContinueInput();
+    }
+
+    private void SetNewGoal()
+    {
+
     }
 
     private void DeleteAllGoals()

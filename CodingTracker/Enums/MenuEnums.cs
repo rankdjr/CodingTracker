@@ -36,7 +36,6 @@ public enum ManageGoalsMenuOptions
 {
     ShowProgress,
     SetNewGoal,
-    EditExistingGoal,
     DeleteGoal,
     DeleteAllGoals,
     ReturnToMainMenu

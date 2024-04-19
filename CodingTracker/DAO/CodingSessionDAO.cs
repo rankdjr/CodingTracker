@@ -9,10 +9,12 @@ namespace CodingTracker.DAO;
 public class CodingSessionDAO
 {
     private readonly DatabaseContext _dbContext;
+    private CodingGoalDAO _codingGoalDAO;
 
-    public CodingSessionDAO(DatabaseContext context)
+    public CodingSessionDAO(DatabaseContext context, CodingGoalDAO codingGoalDAO)
     {
         _dbContext = context;
+        _codingGoalDAO = codingGoalDAO;
     }
 
     public int InsertNewSession(CodingSessionModel session)

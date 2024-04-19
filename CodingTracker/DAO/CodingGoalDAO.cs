@@ -2,6 +2,7 @@
 using CodingTracker.Models;
 using CodingTracker.Services;
 using Dapper;
+using System.Collections.Generic;
 
 namespace CodingTracker.DAO;
 
@@ -54,7 +55,51 @@ public class CodingGoalDAO
         }
     }
 
-    public List<CodingGoalModel> ExecutetGetGoalsQuery(string sqlstring)
+    public bool UpdateCodingGoal(CodingGoalModel goal)
+    {
+        try
+        {
+            using (var connection = _dbContext.GetNewDatabaseConnection())
+            {
+                string sql = @"
+                    UPDATE tb_CodingGoals
+                    SET DateCompleted = @DateCompleted,
+                        TargetDuration = @TargetDuration,
+                        CurrentProgress = @CurrentProgress,
+                        Description = @Description,
+                        IsCompleted = @IsCompleted
+                    WHERE Id = @Id";
+
+                connection.Execute(sql, goal);
+                return true;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.DisplayExceptionErrorMessage("Error updating goal", ex.Message);
+            return false;
+        }
+    }
+
+    public List<CodingGoalModel> GetInProgressCodingGoals()
+    {
+        try
+        {
+            using (var connection = _dbContext.GetNewDatabaseConnection())
+            {
+                string sql = "SELECT * FROM tb_CodingGoals WHERE IsCompleted = 0";
+                var goals = connection.Query<CodingGoalModel>(sql).ToList();
+                return goals;
+            }
+        }
+        catch (Exception ex)
+        {
+            Utilities.DisplayExceptionErrorMessage("Error retrieving in-progress goals", ex.Message);
+            return new List<CodingGoalModel>();  // Return an empty list in case of error
+        }
+    }   
+
+    public List<CodingGoalModel> ExecuetGetGoalsQuery(string sqlstring)
     {
         try
         {

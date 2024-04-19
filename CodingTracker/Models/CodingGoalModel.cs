@@ -42,6 +42,13 @@ public class CodingGoalModel
     {
         var newDuration = TimeSpan.Parse(CurrentProgress) + sessionDuration;
         CurrentProgress = newDuration.ToString(ConfigSettings.TimeFormatType);
+
+        if (newDuration > TimeSpan.Parse(TargetDuration!))
+        {
+            IsCompleted = true;
+            DateCompleted = DateTime.UtcNow.ToString(ConfigSettings.DateFormatLong);
+        }
+        
     }
 
     public void SetDateCompleted(DateTime date)
@@ -52,7 +59,7 @@ public class CodingGoalModel
     public void GetProgressAsIntervals(out int currentMinutes, out int targetMinutes)
     {
         var currentDuration = TimeSpan.Parse(CurrentProgress);
-        var targetDuration = TimeSpan.Parse(TargetDuration);
+        var targetDuration = TimeSpan.Parse(TargetDuration!);
         currentMinutes = (int)currentDuration.TotalMinutes;
         targetMinutes = (int)targetDuration.TotalMinutes;
     }

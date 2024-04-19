@@ -226,6 +226,21 @@ public class InputHandler
                 }));
     }
 
+    public CodingGoalModel PromptForGoalSelection(List<CodingGoalModel> codingGoals, string promptMessage)
+    {
+        return AnsiConsole.Prompt(
+            new SelectionPrompt<CodingGoalModel>()
+                .Title(promptMessage)
+                .PageSize(10)
+                .MoreChoicesText("[grey](Move up and down to see more goal entries)[/]")
+                .UseConverter(entry =>
+                $"[bold yellow]ID:[/] {entry.Id}, " +
+                $"[bold cyan]Goal Description:[/] {entry.Description}, " +
+                $"[bold green]Target Hours:[/] {entry.TargetDuration}, " +
+                $"[bold magenta]Completed Hours:[/] {entry.CurrentProgress}%")
+                .AddChoices(codingGoals));
+    }
+
     public void PauseForContinueInput()
     {
         AnsiConsole.WriteLine("Press any key to continue...");
