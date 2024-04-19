@@ -13,8 +13,8 @@ public class App
 {
     private DatabaseContext _dbContext;
     private DatabaseSeeder _dbSeeder;
-    private CodingSessionDAO _codingSessionDAO;
-    private CodingGoalDAO _codingGoalDAO;
+    private CodingSessionDao _codingSessionDAO;
+    private CodingGoalDao _codingGoalDAO;
     private InputHandler _inputHandler;
     private bool _running = false;
 
@@ -29,8 +29,8 @@ public class App
 
         // Initialize services
         _inputHandler = new InputHandler();
-        _codingGoalDAO = new CodingGoalDAO(_dbContext);
-        _codingSessionDAO = new CodingSessionDAO(_dbContext, _codingGoalDAO);
+        _codingGoalDAO = new CodingGoalDao(_dbContext);
+        _codingSessionDAO = new CodingSessionDao(_dbContext, _codingGoalDAO);
         _dbSeeder = new DatabaseSeeder(_codingSessionDAO, _codingGoalDAO,_inputHandler);
     }
 
