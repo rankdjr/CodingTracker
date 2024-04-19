@@ -41,7 +41,8 @@ public class AppReportManager
         AnsiConsole.Markup($"[bold]Report for last {numberOfPeriods} {period}[/]\n");
         Utilities.PrintNewLines(1);
         AnsiConsole.Markup($"Total Sessions: [bold]{data.TotalSessions}[/]\n");
-        AnsiConsole.Markup($"Average Duration: [bold]{data.AverageDuration} minutes[/]\n");
+        AnsiConsole.Markup($"Total Duration: [bold]{data.TotalSessions * data.AverageDuration} hours[/]\n");
+        AnsiConsole.Markup($"Average Duration: [bold]{data.AverageDuration} hours[/]\n");
         Utilities.PrintNewLines(2);
     }
 }
